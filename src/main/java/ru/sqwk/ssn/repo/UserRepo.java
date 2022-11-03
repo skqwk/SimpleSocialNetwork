@@ -1,6 +1,7 @@
 package ru.sqwk.ssn.repo;
 
 import ru.sqwk.ssn.domain.User;
+import ru.sqwk.ssn.dto.UpdatedUserDTO;
 import ru.sqwk.ssn.model.AuthorModel;
 import ru.sqwk.ssn.model.UserModel;
 import ru.sqwk.ssn.model.UserProfileModel;
@@ -19,4 +20,8 @@ public interface UserRepo {
     void saveRegisteredUser(User user);
 
     AuthorModel getAuthor(long authorId);
+
+    List<UserModel> getUsersByName(String name);
+
+    void update(Long id, UpdatedUserDTO updatedUserDTO);
 }

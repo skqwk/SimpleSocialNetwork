@@ -7,8 +7,8 @@
 
         <!-- Username input -->
         <div class="form-outline mb-4">
-            <label class="form-label" for="username-inp">Никнейм</label>
-            <input th:field="*{username}" type="text" id="username-inp" class="form-control" required/>
+            <label class="form-label" for="username-inp">Логин</label>
+            <input th:field="*{login}" type="text" id="username-inp" class="form-control" required/>
         </div>
 
         <!-- Password input -->
@@ -16,6 +16,25 @@
             <label class="form-label" for="form2Example2">Пароль</label>
             <input th:field="*{password}" type="password" id="form2Example2" class="form-control" required/>
         </div>
+
+        <!-- FullName input -->
+        <div class="form-outline mb-4">
+            <label class="form-label" for="full-name">Полное имя</label>
+            <input th:field="*{fullName}" id="full-name"  type="text" required/>
+        </div>
+
+        <!-- BirthDate input -->
+        <div class="form-outline mb-4">
+            <label class="form-label" for="birth-date">День рождения</label>
+            <input th:field="*{birthDate}" id="birth-date"  type="date" required/>
+        </div>
+
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+            <label class="form-label" for="email">Адрес электронной почты</label>
+            <input th:field="*{email}" id="email"  type="email" required/>
+        </div>
+
 
         <!-- Submit button -->
         <button type="submit" class="btn btn-primary btn-block mb-4">Зарегистрироваться</button>

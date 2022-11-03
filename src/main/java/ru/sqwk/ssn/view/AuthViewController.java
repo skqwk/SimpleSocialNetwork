@@ -1,8 +1,10 @@
 package ru.sqwk.ssn.view;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +13,9 @@ import ru.sqwk.ssn.security.UserCredentials;
 import ru.sqwk.ssn.service.AuthService;
 import ru.sqwk.ssn.service.UserService;
 
+import javax.validation.Valid;
+
+@Slf4j
 @Controller
 @AllArgsConstructor
 public class AuthViewController {
@@ -29,7 +34,12 @@ public class AuthViewController {
     }
 
     @PostMapping("/registration")
-    public String registration(@ModelAttribute("credentials") UserCredentials userCredentials) {
+    public String registration(@Valid @ModelAttribute("credentials") UserCredentials userCredentials, BindingResult result) {
+        if (result.hasErrors()) {
+            log.error("Input has errors!");
+            System.out.println(result.getModel().toString());
+            return "redirect:registration";
+        }
         authService.registrate(userCredentials);
         return "/login";
     }

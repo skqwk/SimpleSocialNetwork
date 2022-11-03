@@ -11,5 +11,6 @@ public class UserModel {
     private String fullName;
     private String login;
     private Long id;
+    private Boolean isFriend;
 
 }

@@ -30,10 +30,10 @@ public class AuthServiceImpl implements AuthService {
 
                 .role(UserRole.USER.toString())
                 .password(passwordEncoder.encode(userCredentials.getPassword()))
-                .login(userCredentials.getUsername())
-                .email(userCredentials.getUsername() + "@ya.ru")
-                .birthdate("1999-10-10")
-                .fullName("Ivanov Ivan Ivanovich")
+                .login(userCredentials.getLogin())
+                .email(userCredentials.getEmail())
+                .birthdate(userCredentials.getBirthDate())
+                .fullName(userCredentials.getFullName())
                 .build();
         userRepo.saveRegisteredUser(registeredUser);
     }

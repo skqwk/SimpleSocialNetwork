@@ -3,15 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title>Users</title>
+
+    <script>
+        async function find() {
+            let query = document.getElementById("query").value;
+            let url = `api/v1/users?name=${query}`;
+            let users = await getUsers(url);
+            console.log(users);
+            appendUsers(users)
+        }
+
+        async function getUsers(url) {
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            return await             fetch(url, {
+                method: "GET",
+                headers: headers
+            })
+                .catch(ex => console.log(ex))
+                .then(data => data.json());
+        }
+
+        async function showAll() {
+            let url = `api/v1/users?`;
+            let users = await getUsers(url);
+            appendUsers(users);
+        }
+
+        function appendUsers(users) {
+            let usersDiv = document.getElementById("users");
+            usersDiv.innerHTML = '';
+
+            users.forEach(user => {
+                let userDiv = document.createElement('div');
+                userDiv.innerHTML = `
+                    <img alt="user-avatar" src="https://loremflickr.com/50/50">
+                    <p >${user.fullName}</p>
+                    <a href="{/users/${user.id}" >${user.login}</a>
+                    <hr>
+                `
+                usersDiv.append(userDiv);
+            })
+        }
+
+        function updateFriendship(friendId, checkbox) {
+            let checked = checkbox.checked;
+            let method = checked ? "POST" : "DELETE";
+            friendshipRequest(method, friendId);
+        }
+
+        function friendshipRequest(method, friendId) {
+            const url = `api/v1/friendship/${friendId}`
+
+            fetch(url, {
+                method: method
+            }).catch(ex => console.log(ex));
+        }
+
+    </script>
 </head>
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
-<div th:each="user: ${users}">
-    <img th:src="@{https://loremflickr.com/50/50}">
-    <p th:text="${user.getFullName()}"></p>
-<!--    @{/users/{id}(id=${post.getAuthor().getId()})}-->
-    <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
-    <hr>
+    <input id="query" type="text">
+    <button onclick="find()">Поиск</button>
+    <button onclick="showAll()">Показать всех</button>
+<div id = "users">
+    <div th:each="user: ${users}">
+        <p th:if="${user.getIsFriend()}">В друзьях:</p>
+        <input type="checkbox" th:checked="${user.getIsFriend()}" th:onchange="|updateFriendship(${user.getId()}, this)|">
+        <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
+        <p th:text="${user.getFullName()}"></p>
+        <!--    @{/users/{id}(id=${post.getAuthor().getId()})}-->
+        <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
+        <hr>
+    </div>
 </div>
 </body>
 </html>
