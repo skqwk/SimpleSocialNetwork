@@ -9,9 +9,9 @@
 
 <div th:with="isNowUser=${#authentication.getName().equals(user.getLogin())}">
     <div th:insert="~{base :: site_navbar}"></div>
-    <img th:src="@{https://loremflickr.com/100/100}">
+    <img th:src="@{https://loremflickr.com/100/100}"/>
 
-    <form onsubmit="update()" th:object="${user}">
+    <form onsubmit="return update();" th:object="${user}">
         <h2>Профиль пользователя</h2>
 
         <!-- Username input -->
@@ -60,11 +60,10 @@
 
             updateQuery(updatedProfile);
             console.log(updatedProfile);
-            return true;
         }
 
         function updateQuery(updatedProfile) {
-
+            alert('the form was submitted');
             var headers = new Headers();
             headers.append("Content-Type", "application/json");
             let url = `/api/v1/user`;
