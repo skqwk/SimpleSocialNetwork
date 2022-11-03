@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head th:fragment="common_header(title)">
+
+    <meta charset="UTF-8">
+    <title th:replace="${title}">Гермес - фирма грузоперевозок</title>
+    <!-- Common styles and scripts -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet"
+          type="text/css"
+          href="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.css" />
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+          crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <style>
+        body > .container, main {
+            min-height: 80vh;
+        }
+        .footer-link-custom {
+            margin-left: 5px;
+        }
+
+        .container > h1 {
+            margin-top: 24px;
+            margin-bottom: 24px;
+        }
+
+    </style>
+</head>
+
+<body>
+<nav th:fragment="site_navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand h1 mb-0" th:href="@{/}" sec:authorize="hasRole('USER') || !isAuthenticated()">SSN</a>
+        <a class="navbar-brand h1 mb-0" th:href="@{/}" sec:authorize="hasRole('ADMIN')">SSN ADMIN</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto" sec:authorize="isAuthenticated()">
+                <li class="nav-item active" >
+                    <a class="nav-link" th:href="@{/posts}">Посты</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link active" th:href="@{/messages}">Сообщения</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link active" th:href="@{/users}">Пользователи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/communities}">Общества</a>
+                </li>
+            </ul>
+            <div class="form-inline my-2 my-lg-0">
+                <ul class="navbar-nav mr-auto"  sec:authorize="!isAuthenticated()">
+                    <li class="nav-item active">
+                        <a class="nav-link" th:href="@{/login}">Войти</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/registration}">Зарегистрироваться</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mr-auto"  sec:authorize="isAuthenticated()">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/logout">Выйти</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+<div th:fragment="to_main_page">
+    <a th:href="@{/}">На главную</a>
+</div>
+<footer th:fragment="site_footer" class="text-center text-white bg-dark mt-5">
+    <!-- Grid container -->
+    <div class="container p-2">
+        <span><a href="#" class="text-white footer-link-custom">Контактная информация</a></span>
+        <span><a href="#" class="text-white footer-link-custom">Правовая информация</a></span>
+        <span><a href="#" class="text-white footer-link-custom">Партнерам</a></span>
+        <span><a href="#" class="text-white footer-link-custom">Работодательство</a></span>
+    </div>
+    <!-- Grid container -->
+
+    <!-- Copyright -->
+    <div class="text-center p-3 bg-dark">
+        © 2022 Powered by:
+        <a class="text-white" href="https://github.com/MatweyL">Matvey Lomovtsev</a>
+    </div>
+    <!-- Copyright -->
+</footer>
+</body>
+</html>

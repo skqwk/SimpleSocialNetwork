@@ -1,0 +1,40 @@
+package ru.sqwk.ssn.view;
+
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.sqwk.ssn.model.MessageModel;
+import ru.sqwk.ssn.security.UserAccount;
+import ru.sqwk.ssn.service.MessageService;
+
+import java.util.List;
+
+@Controller
+@AllArgsConstructor
+@Slf4j
+public class MessagesViewController {
+
+  private final MessageService messageService;
+
+  @GetMapping("/messages")
+  public String chats(@AuthenticationPrincipal UserAccount userAccount, Model model) {
+    List<MessageModel> chats = messageService.getChats(userAccount.getId());
+    model.addAttribute("messages", chats);
+    log.info("Get {} chats by userId = {}", chats.size(), userAccount.getId());
+    return "messages";
+  }
+
+  @GetMapping("/chat")
+  public String chat(
+      @AuthenticationPrincipal UserAccount userAccount,
+      @RequestParam("friend") Long friendId,
+      Model model) {
+    List<MessageModel> messages = messageService.getChat(userAccount.getId(), friendId);
+    model.addAttribute("messages", messages);
+    return "chat";
+  }
+}

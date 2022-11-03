@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        async function join() {
+            document.getElementById("join-button").setAttribute("disabled", "true");
+            document.getElementById("leave-button").removeAttribute("disabled");
+            let member = await updateMembership("POST");
+            console.log(member);
+            console.log(member.login);
+            appendMember(member);
+        }
+
+        function appendMember(member) {
+
+            let membersDiv = document.getElementById("members");
+            let memberDiv = document.createElement("div");
+            memberDiv.setAttribute("id", member.login);
+            memberDiv.innerHTML = `
+                <p>${member.login}</p>
+                <p>${member.entryDate}</p>
+            `;
+            membersDiv.prepend(memberDiv);
+
+        }
+
+        async function leave() {
+            document.getElementById("join-button").removeAttribute("disabled");
+            document.getElementById("leave-button").setAttribute("disabled", "true");
+            let deletedMember = await updateMembership("DELETE");
+            console.log(deletedMember.login);
+            document.getElementById(deletedMember.login).remove();
+        }
+
+        async function updateMembership(method)  {
+            let communityId = parseInt(document.location.href.split("/")[4]);
+            let headers = new Headers();
+            let url = `/membership/${communityId}`;
+
+            return await fetch(url, {
+                method: method,
+                headers: headers
+            })
+                .catch(ex => console.log(ex))
+                .then(data => data.json());
+
+        }
+    </script>
+</head>
+<body>
+<div>
+    <img th:src="@{https://loremflickr.com/100/100}">
+    <br>
+    <h1 th:text="${community.getName()}"></h1>
+    <button id="join-button" th:disabled="${community.getBeIn()}" onclick="join()">Вступить</button>
+    <button id="leave-button" th:disabled="${!community.getBeIn()}" onclick="leave()">Покинуть</button>
+    <h3 th:text="${community.getTopic}"></h3>
+    <h3 th:text="${community.getCreationDate()}"></h3>
+    <div id="members">
+        <div th:id="${member.getLogin()}" th:each="member : ${community.getMembers()}">
+            <p th:text="${member.getLogin()}"></p>
+            <p th:text="${member.getEntryDate()}"></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <script src="/js/sockjs-0.3.4.js"></script>
+    <script src="/js/stomp.js"></script>
+    <script type="text/javascript">
+
+        var stompClient = null;
+        function setConnected(connected) {
+            document.getElementById('connect').disabled = connected;
+            document.getElementById('disconnect').disabled = !connected;
+            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+            document.getElementById('response').innerHTML = '';
+        }
+
+        function connect() {
+            var socket = new SockJS('/chat');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function(frame) {
+                // setConnected(true);
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/messages', function(messageOutput) {
+                    showMessageOutput(JSON.parse(messageOutput.body));
+                });
+            });
+        }
+
+        function disconnect() {
+            if(stompClient != null) {
+                stompClient.disconnect();
+            }
+            setConnected(false);
+            console.log("Disconnected");
+        }
+
+        function showMessageOutput(messageOutput) {
+            console.log(messageOutput)
+            // var response = document.getElementById('response');
+            // var p = document.createElement('pre');
+            // p.style.wordWrap = 'break-word';
+            // p.appendChild(document.createTextNode("[" + messageOutput.sentAt + "] " + messageOutput.from + "> " + messageOutput.content ));
+            // response.appendChild(p);
+        }
+
+        function sendMessage() {
+            var content = document.getElementById('content').value;
+            var to = parseInt(document.location.href.split("/")[3].split("?")[1].substr(7));
+            stompClient.send("/app/chat", {}, JSON.stringify({'to':to,'content':content}));
+
+        }
+
+        function appendMessage(message) {
+            console.log(message);
+        }
+    </script>
+</head>
+<body onload="connect()">
+<div th:insert="~{base :: site_navbar}"></div>
+<div>
+    <div id="conversationDiv">
+        <input type="text" id="content" placeholder="Write a message..."/>
+        <button id="sendMessage" onclick="sendMessage()">Send</button>
+    </div>
+
+    <div th:each="message: ${messages}" th:id="${message.getId()}" class="message">
+        <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>
+        <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}" th:text="${message.getAuthor().getLogin()}"></a>
+        <p th:text="${message.getContent()}"></p>
+        <p th:text="${message.getSentAt()}"></p>
+        <hr>
+    </div>
+</div>
+</body>
+</html>

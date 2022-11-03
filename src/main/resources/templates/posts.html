@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Posts</title>
+    <style>
+        /*.post {*/
+        /*    cursor: pointer;*/
+        /*}*/
+    </style>
+
+    <script>
+        function addPost() {
+            url = "/post"
+            var postContent = document.getElementById("post-content").value;
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            console.log({postContent})
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify({postContent}),
+                headers: headers
+            })
+                .catch(ex => console.log(ex))
+                .then(resp => resp.json())
+                .then(data => appendPost(data));
+            document.getElementById("post-content").value = "";
+        }
+
+        function appendPost(post) {
+            let postDiv = document.createElement("div");
+            postDiv.setAttribute("id", post.id);
+            postDiv.innerHTML = `
+                            <a href="/users/${post.author.id}">${post.author.login}</a>
+                            <a href="/posts/${post.id}">Развернуть</a>
+                            <a onclick="deletePost(${post.id})">Удалить</a>
+                            <p>${post.content}</p>
+                            <p>${post.createdAt}</p>
+                            <p name="amountLikes">Понравилось: ${post.amountLikes}</p>
+                            <input type="checkbox" onchange="updateLike(${post.id}, this)"/>
+                            <hr>
+                        `
+            document.getElementById("posts").prepend(postDiv)
+        }
+
+        function updateLike(id, element) {
+            console.log(id);
+            var isChecked = element.checked;
+            console.log(isChecked);
+            var amountLikes = document.getElementById(id).children.namedItem("amountLikes");
+            var text = amountLikes.innerText;
+            var count = parseInt(text.split(" ")[1])
+            var prefix = "Понравилось: "
+            amountLikes.innerText = prefix + (isChecked ? count + 1 : count - 1);
+
+            var url = `/likes/${id}`
+            fetch(url, {
+                method: isChecked ? "POST" : "DELETE"
+            })
+                .catch(ex => console.log(ex));
+
+        }
+
+        function deletePost(postId) {
+            url = `/posts/${postId}`
+
+            fetch(url, {
+                method: "DELETE"
+            })
+                .catch(ex => console.log(ex));
+
+            document.getElementById(postId).remove();
+
+        }
+    </script>
+</head>
+<body>
+<div th:insert="~{base :: site_navbar}"></div>
+<form action="javascript:addPost()">
+    <textarea maxlength="200" id="post-content" name="post-content" rows="4" cols="50"></textarea>
+    <input type="submit" value="Создать пост"/>
+</form>
+<div id="posts">
+    <div th:each="post: ${posts}" th:id="${post.getId()}" class="post">
+        <a th:href="@{/users/{id}(id=${post.getAuthor().getId()})}" th:text="${post.getAuthor().getLogin()}"></a>
+        <a th:href="@{/posts/{id}(id=${post.getId()})}">Развернуть</a>
+        <a th:if="${post.getIsEditable()}" th:onclick="|deletePost(${post.getId()})|">Удалить</a>
+        <p th:text="${post.getContent()}"></p>
+        <p th:text="${post.getCreatedAt()}"></p>
+        <p name="amountLikes" th:text="|Понравилось: ${post.getAmountLikes()}|"></p>
+        <input type="checkbox" th:checked="${post.getIsLiked()}" th:onchange="|updateLike(${post.getId()}, this)|"/>
+        <hr>
+    </div>
+</div>
+</body>
+</html>

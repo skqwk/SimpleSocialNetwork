@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages</title>
+    <style>
+        /*.post {*/
+        /*    cursor: pointer;*/
+        /*}*/
+    </style>
+
+
+</head>
+<body>
+<div th:insert="~{base :: site_navbar}"></div>
+<div id="messages">
+    <div th:each="message: ${messages}" th:id="${message.getId()}" class="message">
+        <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>
+        <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}" th:text="${message.getAuthor().getLogin()}"></a>
+        <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>
+        <p th:text="${message.getContent()}"></p>
+        <p th:text="${message.getSentAt()}"></p>
+        <hr>
+    </div>
+</div>
+</body>
+</html>

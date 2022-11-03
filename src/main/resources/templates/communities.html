@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:insert="~{base :: site_navbar}"></div>
+<div th:each="community: ${communities}">
+    <a th:href="@{/communities/{id}(id=${community.getId()})}" th:text="${community.getName()}"></a>
+    <p th:text="${community.getTopic()}"></p>
+    <p th:text="${community.getAmountMembers()}"></p>
+    <hr>
+</div>
+</body>
+</html>

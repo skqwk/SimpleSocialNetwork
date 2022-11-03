@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post</title>
+    <script>
+        function deleteComment(commentId) {
+            url = `/comments/${commentId}`;
+
+            fetch(url, {
+                method: "DELETE"
+            })
+                .catch(ex => console.log(ex));
+            document.getElementById(`c-${commentId}`).remove();
+        }
+
+        function updatePost(postId) {
+            let postContent = document.getElementById("post-content").value;
+
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            let url = `/posts/${postId}`;
+
+            fetch(url, {
+                method: "PUT",
+                body: JSON.stringify({postContent}),
+                headers: headers
+            })
+                .catch(ex => console.log(ex));
+        }
+
+        function addComment() {
+            var postId = parseInt(window.location.href.split("/")[4])
+            var url = `${postId}/comment`
+            var commentContent = document.getElementById("new-comment-content").value;
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            console.log({commentContent})
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify({commentContent}),
+                headers: headers
+            })
+                .catch(ex => console.log(ex))
+                .then(resp => resp.json())
+                .then(data => appendComment(data));
+            document.getElementById("new-comment-content").value = "";
+        }
+
+        function appendComment(comment) {
+            let commentDiv = document.createElement("div");
+            commentDiv.setAttribute("id", comment.id);
+            commentDiv.innerHTML = `
+
+                <a href="/users/${comment.author.id}">${comment.author.login}</a>
+                <a onclick="deleteComment(${comment.id})">Удалить</a>
+                <p>${comment.content}</p>
+                <p>${comment.createdAt}</p>
+                <hr>
+                `
+            document.getElementById("comments").prepend(commentDiv)
+        }
+    </script>
+</head>
+<body>
+<div>
+    <div th:id="${post.getId()}">
+        <form th:action="|javascript:updatePost(${post.getId()})|">
+            <textarea th:readonly="${!post.getIsEditable()}" th:text="${post.getContent()}" maxlength="200" id="post-content" name="post-content" rows="10" cols="80"></textarea>
+            <input th:if="${post.getIsEditable()}" type="submit" value="Изменить пост"/>
+        </form>
+        <br><br>
+
+        <form action="javascript:addComment()">
+            <textarea maxlength="200" id="new-comment-content" name="new-comment-content" rows="4" cols="50"></textarea>
+            <input type="submit" value="Добавить комментарий"/>
+        </form>
+
+        <div id="comments">
+            <div th:each="comment: ${post.getComments()}" th:id="|c-${comment.getId()}|">
+                <a th:text="${comment.getAuthor().getLogin()}" th:href="@{/users/{id}(id=${comment.getAuthor().getId()})}"/>
+                <a th:if="${comment.getIsEditable()}" th:onclick="|deleteComment(${comment.getId()})|">Удалить</a>
+                <p th:text="${comment.getContent()}"/>
+                <p th:text="${comment.getCreatedAt()}"/>
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
