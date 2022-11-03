@@ -1,1 +1,5 @@
 # SimpleSocialNetwork
+
+## Структура БД
+
+
