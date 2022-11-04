@@ -5,6 +5,7 @@
     <form th:action="@{/registration}" th:object="${credentials}" method="POST">
         <h2>Регистрация аккаунта</h2>
 
+        <p th:if="${hasError}" th:text="${reason}"></p>
         <!-- Username input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="username-inp">Логин</label>

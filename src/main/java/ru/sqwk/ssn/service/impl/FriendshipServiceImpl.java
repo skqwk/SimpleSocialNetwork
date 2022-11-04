@@ -28,10 +28,16 @@ public class FriendshipServiceImpl implements FriendshipService {
         log.info("Create friendship between ({}, {})", userId, friendId);
         Friendship friendship = Friendship.builder()
                 .timestamp(Formatter.format(new Date()))
-                .category("classmates")
+                .category("Common")
                 .user1(userId)
                 .user2(friendId)
                 .build();
         friendshipRepo.save(friendship);
+    }
+
+    @Override
+    public void updateFriendshipCategory(Long userId, Long friendId, String category) {
+        log.info("Update friendship({}, {}), category = {}", userId, friendId, category);
+        friendshipRepo.update(userId, friendId, category);
     }
 }

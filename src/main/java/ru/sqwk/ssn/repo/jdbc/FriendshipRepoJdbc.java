@@ -27,4 +27,11 @@ public class FriendshipRepoJdbc implements FriendshipRepo {
 
 
     }
+
+    @Override
+    public void update(Long userId, Long friendId, String category) {
+        String query = "UPDATE friendship SET category = ? WHERE user2 = ? AND user1 = ?";
+        jdbc.update(query, category, userId, friendId);
+        jdbc.update(query, category, friendId, userId);
+    }
 }

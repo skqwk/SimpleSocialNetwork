@@ -5,6 +5,8 @@
     <form method="POST" action="/login">
         <h2>Вход в аккаунт</h2>
 
+        <p th:if="${loginError}">Пользователь с данными логином и паролем не найден</p>
+
         <!-- Username input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="username-inp">Никнейм</label>

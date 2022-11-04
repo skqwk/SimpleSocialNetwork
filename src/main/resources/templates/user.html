@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title th:text="${user.getLogin()}"></title>
+
 
 </head>
 <body>
@@ -11,35 +12,37 @@
     <div th:insert="~{base :: site_navbar}"></div>
     <img th:src="@{https://loremflickr.com/100/100}"/>
 
-    <form onsubmit="return update();" th:object="${user}">
-        <h2>Профиль пользователя</h2>
+    <h2 th:if="${#authorization.expression('hasRole(''USER'')')}">Профиль пользователя</h2>
+    <h2 th:if="${#authorization.expression('hasRole(''ADMIN'')')}">Профиль администратора</h2>
+    <form th:object="${user}" onsubmit="return update();" action="/profile" method="get">
 
         <!-- Username input -->
         <div class="form-outline mb-4">
-            <label class="form-label" for="username-inp">Логин</label>
-            <input th:field="*{login}" type="text" id="username-inp" class="form-control" th:disabled="${!isNowUser}"} required/>
+            <label class="form-label" for="login">Логин</label>
+            <input th:field="*{login}" type="text" id="login" class="form-control" disabled }
+                   required/>
         </div>
 
         <!-- FullName input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="full-name">Полное имя</label>
-            <input th:field="*{fullName}" id="full-name"  type="text" th:disabled="${!isNowUser}" required/>
+            <input th:field="*{fullName}" id="full-name" type="text" th:disabled="${!isNowUser}" required/>
         </div>
 
         <!-- BirthDate input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="birth-date">День рождения</label>
-            <input th:field="*{birthDate}" id="birth-date"  type="date" th:disabled="${!isNowUser}" required/>
+            <input th:field="*{birthDate}" id="birth-date" type="date" th:disabled="${!isNowUser}" required/>
         </div>
 
         <!-- Email input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="email">Адрес электронной почты</label>
-            <input th:field="*{email}" id="email"  type="email" th:disabled="${!isNowUser}" required/>
+            <input th:field="*{email}" id="email" type="email" th:disabled="${!isNowUser}" required/>
         </div>
 
-
         <!-- Submit button -->
+<!--        <button th:if="${isNowUser}" onclick="update()" class="btn btn-primary btn-block mb-4">Обновить</button>-->
         <button th:if="${isNowUser}" type="submit" class="btn btn-primary btn-block mb-4">Обновить</button>
     </form>
 
@@ -58,12 +61,12 @@
                 email: email
             }
 
+            console.log(updatedProfile);
             updateQuery(updatedProfile);
             console.log(updatedProfile);
         }
 
         function updateQuery(updatedProfile) {
-            alert('the form was submitted');
             var headers = new Headers();
             headers.append("Content-Type", "application/json");
             let url = `/api/v1/user`;
@@ -75,12 +78,14 @@
             })
                 .catch(ex => console.log(ex));
 
+
         }
 
         function getValue(name) {
             return document.getElementById(name).value;
         }
     </script>
+
 </div>
 </body>
 </html>

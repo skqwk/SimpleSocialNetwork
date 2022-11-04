@@ -71,7 +71,7 @@
         </form>
         <br><br>
 
-        <form action="javascript:addComment()">
+        <form th:if="${#authorization.expression('hasRole(''USER'')')}" action="javascript:addComment()">
             <textarea maxlength="200" id="new-comment-content" name="new-comment-content" rows="4" cols="50"></textarea>
             <input type="submit" value="Добавить комментарий"/>
         </form>
@@ -79,7 +79,7 @@
         <div id="comments">
             <div th:each="comment: ${post.getComments()}" th:id="|c-${comment.getId()}|">
                 <a th:text="${comment.getAuthor().getLogin()}" th:href="@{/users/{id}(id=${comment.getAuthor().getId()})}"/>
-                <a th:if="${comment.getIsEditable()}" th:onclick="|deleteComment(${comment.getId()})|">Удалить</a>
+                <a th:if="${#authorization.expression('hasRole(''ADMIN'')') || comment.getIsEditable()}" th:onclick="|deleteComment(${comment.getId()})|">Удалить</a>
                 <p th:text="${comment.getContent()}"/>
                 <p th:text="${comment.getCreatedAt()}"/>
                 <hr>

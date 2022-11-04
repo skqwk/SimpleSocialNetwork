@@ -55,9 +55,16 @@
                 <li class="nav-item" >
                     <a class="nav-link active" th:href="@{/users}">Пользователи</a>
                 </li>
+                <li class="nav-item" sec:authorize="hasRole('USER')">
+                    <a class="nav-link active" th:href="@{/friends}">Друзья</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link active" th:href="@{/communities}">Общества</a>
                 </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link active" th:href="@{/community/new}">Создать общество</a>
+                </li>
+
             </ul>
             <div class="form-inline my-2 my-lg-0">
                 <ul class="navbar-nav mr-auto"  sec:authorize="!isAuthenticated()">

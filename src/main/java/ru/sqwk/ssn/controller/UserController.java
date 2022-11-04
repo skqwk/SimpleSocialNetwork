@@ -18,7 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
-    List<UserModel> findAll(@RequestParam(name = "name", required = false, defaultValue = "") String name) {
+    public List<UserModel> findAll(@RequestParam(name = "name", required = false, defaultValue = "") String name) {
         if (name.isEmpty()) {
             return userService.getUsers();
 
@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    void update(@AuthenticationPrincipal UserAccount userAccount, @RequestBody UpdatedUserDTO updatedUserDTO) {
+    public void update(@AuthenticationPrincipal UserAccount userAccount, @RequestBody UpdatedUserDTO updatedUserDTO) {
         userService.updateUser(userAccount.getId(), updatedUserDTO);
     }
 

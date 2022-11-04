@@ -11,8 +11,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageDTO {
-    private String from;
-    private String to;
-    private String content;
+public class SelectedFriendshipCategoryDTO {
+    private String selectedCategory;
 }

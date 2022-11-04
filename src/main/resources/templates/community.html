@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title th:text="${community.getName()}"></title>
     <script>
         async function join() {
             document.getElementById("join-button").setAttribute("disabled", "true");
@@ -11,6 +11,15 @@
             console.log(member);
             console.log(member.login);
             appendMember(member);
+        }
+
+        async function deleteCommunity(communityId) {
+            const url = `/api/v1/community/${communityId}`
+            await fetch(url, {
+                method: "DELETE"
+            }).catch(ex => console.log(ex));
+            alert("delete!")
+            document.location.href='/communities'
         }
 
         function appendMember(member) {
@@ -50,12 +59,14 @@
     </script>
 </head>
 <body>
-<div>
+<div th:with="isUser=${#authorization.expression('hasRole(''USER'')')}">
     <img th:src="@{https://loremflickr.com/100/100}">
     <br>
     <h1 th:text="${community.getName()}"></h1>
-    <button id="join-button" th:disabled="${community.getBeIn()}" onclick="join()">Вступить</button>
-    <button id="leave-button" th:disabled="${!community.getBeIn()}" onclick="leave()">Покинуть</button>
+    <h3 th:text="|Возрастные ограничения: ${community.getAgeLimit()}|"></h3>
+    <button id="join-button" th:if="${isUser}" th:disabled="${community.getBeIn() || !community.getIsSuitForAgeLimit()}" onclick="join()">Вступить</button>
+    <button id="leave-button" th:if="${isUser}" th:disabled="${!community.getBeIn()}" onclick="leave()">Покинуть</button>
+    <button id="delete-button" th:if="${!isUser}" th:onclick="|deleteCommunity(${community.getId()})|">Удалить сообщество</button>
     <h3 th:text="${community.getTopic}"></h3>
     <h3 th:text="${community.getCreationDate()}"></h3>
     <div id="members">

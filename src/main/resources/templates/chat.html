@@ -15,16 +15,36 @@
             document.getElementById('response').innerHTML = '';
         }
 
+        let nowUser = null;
         function connect() {
-            var socket = new SockJS('/chat');
+            getNowUser();
+            var socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
-            stompClient.connect({}, function(frame) {
-                // setConnected(true);
-                console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/messages', function(messageOutput) {
-                    showMessageOutput(JSON.parse(messageOutput.body));
-                });
-            });
+            stompClient.connect({}, onConnected);
+        }
+
+        function getNowUser() {
+            const url = `api/v1/auth`;
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            return fetch(url, {
+                headers: headers,
+                method: "GET"
+            }).catch(ex => console.log(ex))
+                .then(resp => resp.json())
+            .then(resp => nowUser = resp.login)
+        }
+
+        const onConnected = () => {
+            console.log('Connected');
+            console.log(nowUser)
+            stompClient.subscribe(`/user/${nowUser}/queue/messages`, onMessageReceived);
+
+        }
+
+        const onMessageReceived = (msg) => {
+            const data = JSON.parse(msg.body);
+            console.log(data);
         }
 
         function disconnect() {
@@ -45,9 +65,11 @@
         }
 
         function sendMessage() {
-            var content = document.getElementById('content').value;
-            var to = parseInt(document.location.href.split("/")[3].split("?")[1].substr(7));
-            stompClient.send("/app/chat", {}, JSON.stringify({'to':to,'content':content}));
+            let content = document.getElementById('content').value;
+            //var to = parseInt(document.location.href.split("/")[3].split("?")[1].substr(7));
+            let to = document.getElementById("recipient").getAttribute("value");
+            let from = document.getElementById("sender").getAttribute("value");
+            stompClient.send("/app/chat", {}, JSON.stringify({'to':to, 'from': from, 'content':content}));
 
         }
 
@@ -59,6 +81,9 @@
 <body onload="connect()">
 <div th:insert="~{base :: site_navbar}"></div>
 <div>
+    <div id="sender" th:value="${sender}"></div>
+    <div id="recipient" th:value="${recipient}" ></div>
+
     <div id="conversationDiv">
         <input type="text" id="content" placeholder="Write a message..."/>
         <button id="sendMessage" onclick="sendMessage()">Send</button>

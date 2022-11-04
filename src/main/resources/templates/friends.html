@@ -2,7 +2,7 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Users</title>
+    <title>Friends</title>
 
     <script>
         async function find() {
@@ -16,7 +16,7 @@
         async function getUsers(url) {
             var headers = new Headers();
             headers.append("Content-Type", "application/json");
-            return await             fetch(url, {
+            return await fetch(url, {
                 method: "GET",
                 headers: headers
             })
@@ -46,12 +46,6 @@
             })
         }
 
-        function updateFriendship(friendId, checkbox) {
-            let checked = checkbox.checked;
-            let method = checked ? "POST" : "DELETE";
-            friendshipRequest(method, friendId);
-        }
-
         function friendshipRequest(method, friendId) {
             const url = `api/v1/friendship/${friendId}`
 
@@ -60,19 +54,51 @@
             }).catch(ex => console.log(ex));
         }
 
+        function friendshipCategoryRequest(method, friendId, selectedCategory) {
+            let headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            const url = `api/v1/friendship/${friendId}/category`
+            let category = {selectedCategory}
+            fetch(url, {
+                headers: headers,
+                method: method,
+                body: JSON.stringify(category)
+            }).catch(ex => console.log(ex));
+        }
+
+
+        function deleteFriendship(friendId, checkbox) {
+            friendshipRequest("DELETE", friendId);
+            document.getElementById(friendId).remove();
+        }
+
+        function updateFriendshipCategory(friendId, select) {
+            let selected = select.value;
+            console.log(selected);
+
+            friendshipCategoryRequest("PUT", friendId, selected);
+        }
+
     </script>
 </head>
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
-    <input id="query" type="text">
-    <button onclick="find()">Поиск</button>
-    <button onclick="showAll()">Показать всех</button>
-<div id = "users">
-    <div th:each="user: ${users}">
-        <p th:if="${user.getIsFriend()}">В друзьях:</p>
-        <input sec:authorize="hasRole('USER')" type="checkbox" th:checked="${user.getIsFriend()}" th:onchange="|updateFriendship(${user.getId()}, this)|">
+<input id="query" type="text">
+<button onclick="find()">Поиск</button>
+<button onclick="showAll()">Показать всех</button>
+<div id="friends">
+    <div th:each="user: ${friends}" th:id="${user.getId()}">
+        <input sec:authorize="hasRole('USER')" type="checkbox" checked
+               th:onchange="|deleteFriendship(${user.getId()}, this)|">
         <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
         <p th:text="${user.getFullName()}"></p>
+        <select  th:onchange="|updateFriendshipCategory(${user.getId()}, this)|">
+            <option th:each="i : ${ {'Classmates', 'Work', 'Common', 'Relatives'} }"
+                    th:value="${i}"
+                    th:text="${i}"
+                    th:selected="${i == user.getCategory()}">
+            </option>
+        </select>
         <!--    @{/users/{id}(id=${post.getAuthor().getId()})}-->
         <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
         <hr>

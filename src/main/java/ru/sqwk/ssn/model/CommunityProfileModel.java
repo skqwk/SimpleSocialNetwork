@@ -16,4 +16,6 @@ public class CommunityProfileModel {
   private String creationDate;
   private List<CommunityMemberModel> members;
   private Boolean beIn;
+  private String ageLimit;
+  private Boolean isSuitForAgeLimit;
 }

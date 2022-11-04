@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.sqwk.ssn.model.MessageModel;
 import ru.sqwk.ssn.security.UserAccount;
 import ru.sqwk.ssn.service.MessageService;
+import ru.sqwk.ssn.service.UserService;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ import java.util.List;
 public class MessagesViewController {
 
   private final MessageService messageService;
+  private final UserService userService;
 
   @GetMapping("/messages")
   public String chats(@AuthenticationPrincipal UserAccount userAccount, Model model) {
@@ -35,6 +37,8 @@ public class MessagesViewController {
       Model model) {
     List<MessageModel> messages = messageService.getChat(userAccount.getId(), friendId);
     model.addAttribute("messages", messages);
+    model.addAttribute("sender", userAccount.getLogin());
+    model.addAttribute("recipient", userService.getUser(friendId).getLogin());
     return "chat";
   }
 }

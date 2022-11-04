@@ -11,8 +11,8 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageDTO {
-    private String from;
-    private String to;
-    private String content;
+public class NewCommunityDTO {
+  private String name;
+  private String topic;
+  private Integer ageLimit;
 }
