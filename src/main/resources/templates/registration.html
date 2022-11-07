@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="base :: common_header(~{::title})">
+    <title>Регистрация</title>
+</head>
 <body>
+<div th:insert="~{base :: site_navbar}"></div>
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <form th:action="@{/registration}" th:object="${credentials}" method="POST">
         <h2>Регистрация аккаунта</h2>
 
-        <p th:if="${hasError}" th:text="${reason}"></p>
+        <p th:if="${hasError}" class="alert alert-danger" role="alert" th:text="${reason}"></p>
         <!-- Username input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="username-inp">Логин</label>
@@ -21,19 +25,19 @@
         <!-- FullName input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="full-name">Полное имя</label>
-            <input th:field="*{fullName}" id="full-name"  type="text" required/>
+            <input th:field="*{fullName}" id="full-name"  type="text"  class="form-control" required/>
         </div>
 
         <!-- BirthDate input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="birth-date">День рождения</label>
-            <input th:field="*{birthDate}" id="birth-date"  type="date" required/>
+            <input th:field="*{birthDate}" id="birth-date"  type="date"  class="form-control" required/>
         </div>
 
         <!-- Email input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="email">Адрес электронной почты</label>
-            <input th:field="*{email}" id="email"  type="email" required/>
+            <input th:field="*{email}" id="email"  type="email"  class="form-control" required/>
         </div>
 
 

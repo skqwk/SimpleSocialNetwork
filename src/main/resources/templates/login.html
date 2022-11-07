@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="base :: common_header(~{::title})">
+    <title>Вход</title>
+</head>
 <body>
+<div th:insert="~{base :: site_navbar}"></div>
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <form method="POST" action="/login">
         <h2>Вход в аккаунт</h2>
 
-        <p th:if="${loginError}">Пользователь с данными логином и паролем не найден</p>
+        <p th:if="${loginError}" class="alert alert-danger" role="alert" >Пользователь с данными логином и паролем не найден</p>
 
         <!-- Username input -->
         <div class="form-outline mb-4">

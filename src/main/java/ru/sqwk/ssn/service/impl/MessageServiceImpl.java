@@ -5,15 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.sqwk.ssn.domain.Message;
 import ru.sqwk.ssn.dto.MessageDTO;
+import ru.sqwk.ssn.dto.UpdatedMessageDTO;
 import ru.sqwk.ssn.model.MessageModel;
 import ru.sqwk.ssn.model.ProcessedMessageModel;
-import ru.sqwk.ssn.model.UserProfileModel;
 import ru.sqwk.ssn.repo.MessageRepo;
 import ru.sqwk.ssn.security.UserAccount;
 import ru.sqwk.ssn.service.MessageService;
 import ru.sqwk.ssn.service.UserService;
 import ru.sqwk.ssn.util.Formatter;
-import ru.sqwk.ssn.util.SecurityContextWrapper;
 
 import java.util.Date;
 import java.util.List;
@@ -38,7 +37,7 @@ public class MessageServiceImpl implements MessageService {
 
   @Override
   public ProcessedMessageModel saveMessage(MessageDTO messageDTO) {
-    //UserAccount senderUser = SecurityContextWrapper.getNowUser();
+    // UserAccount senderUser = SecurityContextWrapper.getNowUser();
     UserAccount to = userService.getUserByName(messageDTO.getTo());
     UserAccount from = userService.getUserByName(messageDTO.getFrom());
     Message message =
@@ -52,17 +51,33 @@ public class MessageServiceImpl implements MessageService {
 
     log.info("Save message from = {}, to = {}", from.getLogin(), to.getLogin());
 
+    Long messageId = messageRepo.save(message);
+    Message savedMessage = getMessage(messageId);
+
     ProcessedMessageModel processedMessage =
         ProcessedMessageModel.builder()
-            .content(message.getContent())
+            .id(savedMessage.getId())
+            .content(savedMessage.getContent())
             .senderId(from.getId())
             .senderLogin(from.getLogin())
-            .recepientId(to.getId())
-            .recepientLogin(to.getLogin())
-            .sentAt(message.getTimestamp())
+            .recipientId(to.getId())
+            .recipientLogin(to.getLogin())
+            .sentAt(savedMessage.getTimestamp())
             .build();
-
-    // messageRepo.save()
     return processedMessage;
+  }
+
+  @Override
+  public void deleteMessage(Long messageId) {
+    messageRepo.delete(messageId);
+  }
+
+  @Override
+  public void updateMessage(Long messageId, UpdatedMessageDTO messageDTO) {
+    messageRepo.update(messageId, messageDTO.getMessageContent());
+  }
+
+  private Message getMessage(Long messageId) {
+    return messageRepo.getMessage(messageId).orElseThrow(() -> new RuntimeException("Not found message"));
   }
 }

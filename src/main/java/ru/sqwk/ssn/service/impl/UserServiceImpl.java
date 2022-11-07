@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.sqwk.ssn.dto.UpdatedUserDTO;
+import ru.sqwk.ssn.model.FriendChatModel;
 import ru.sqwk.ssn.model.FriendModel;
 import ru.sqwk.ssn.model.UserModel;
 import ru.sqwk.ssn.model.UserProfileModel;
@@ -17,6 +18,7 @@ import ru.sqwk.ssn.service.AuthService;
 import ru.sqwk.ssn.service.UserService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -65,6 +67,35 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserAccount getUserByName(String name) {
-    return userRepo.findByLogin(name).orElseThrow(() -> new UsernameNotFoundException("User with name not found"));
+    return userRepo
+        .findByLogin(name)
+        .orElseThrow(() -> new UsernameNotFoundException("User with name not found"));
+  }
+
+  @Override
+  public List<FriendChatModel> getFriendChats() {
+    return userRepo.getFriendChats();
+  }
+
+  @Override
+  public List<FriendModel> getFriendsByCategory(String category) {
+    return getFriends().stream()
+        .filter(f -> f.getCategory().equals(category))
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<FriendModel> getFriendsByCategoryAndName(String category, String name) {
+    if (category.equals("All")) {
+      return getFriendsByName(name);
+    } else {
+      return getFriendsByName(name).stream()
+          .filter(f -> f.getCategory().equals(category))
+          .collect(Collectors.toList());
+    }
+  }
+
+  private List<FriendModel> getFriendsByName(String name) {
+    return userRepo.getFriendsByName(name);
   }
 }

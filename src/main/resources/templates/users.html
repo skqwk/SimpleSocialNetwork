@@ -1,82 +1,109 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head>
+<head th:insert="base :: common_header(~{::title})">
     <meta charset="UTF-8">
     <title>Users</title>
 
-    <script>
-        async function find() {
-            let query = document.getElementById("query").value;
-            let url = `api/v1/users?name=${query}`;
-            let users = await getUsers(url);
-            console.log(users);
-            appendUsers(users)
-        }
+</head>
+<body>
+<div th:value="${#authorization.expression('hasRole(''ADMIN'')')}" id="isAdmin"></div>
+<div th:insert="~{base :: site_navbar}"></div>
 
-        async function getUsers(url) {
-            var headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            return await             fetch(url, {
-                method: "GET",
-                headers: headers
-            })
-                .catch(ex => console.log(ex))
-                .then(data => data.json());
-        }
+<div class="container">
+    <div class="mb-4 mt-4" >
+        <div class="row align-items-center" >
+            <div class="col-sm-6">
+                <input id="query" type="text" class="form-control" placeholder="Введите запрос">
+            </div>
 
-        async function showAll() {
-            let url = `api/v1/users?`;
-            let users = await getUsers(url);
-            appendUsers(users);
-        }
+            <div class="col-auto">
+                <button class="btn btn-primary" onclick="find()">Поиск</button>
+                <button class="btn btn-light" onclick="showAll()">Показать всех</button>
+            </div>
+        </div>
+    </div>
 
-        function appendUsers(users) {
-            let usersDiv = document.getElementById("users");
-            usersDiv.innerHTML = '';
+    <div id="users">
+        <div th:each="user: ${users}">
+            <p th:if="${user.getIsFriend()}">В друзьях:</p>
+            <input sec:authorize="hasRole('USER')" type="checkbox" th:checked="${user.getIsFriend()}"
+                   th:onchange="|updateFriendship(${user.getId()}, this)|">
+            <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
+            <p th:text="${user.getFullName()}"></p>
+            <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
+            <hr>
+        </div>
+    </div>
 
-            users.forEach(user => {
-                let userDiv = document.createElement('div');
-                userDiv.innerHTML = `
+</div>
+<script>
+
+    async function find() {
+        let query = document.getElementById("query").value;
+        let url = `api/v1/users?name=${query}`;
+        let users = await getUsers(url);
+        console.log(users);
+        appendUsers(users)
+    }
+
+    async function getUsers(url) {
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        return await fetch(url, {
+            method: "GET",
+            headers: headers
+        })
+            .catch(ex => console.log(ex))
+            .then(data => data.json());
+    }
+
+    async function showAll() {
+        let url = `api/v1/users?`;
+        let users = await getUsers(url);
+        appendUsers(users);
+    }
+
+    function appendUsers(users) {
+        let usersDiv = document.getElementById("users");
+        usersDiv.innerHTML = '';
+
+        users.forEach(user => {
+            let userDiv = document.createElement('div');
+            let checkedFriend = user.isFriend ? 'checked' : '';
+            let detail = isAdmin() ? '' : `
+                    ${user.isFriend ? '<p>В друзьях</p>' : ''}
+                    <input type="checkbox" ${checkedFriend} onchange="updateFriendship(${user.id},this)">
+                    `;
+
+            userDiv.innerHTML = `
+                    ${detail}
                     <img alt="user-avatar" src="https://loremflickr.com/50/50">
                     <p >${user.fullName}</p>
                     <a href="{/users/${user.id}" >${user.login}</a>
                     <hr>
                 `
-                usersDiv.append(userDiv);
-            })
-        }
+            usersDiv.append(userDiv);
+        })
+    }
 
-        function updateFriendship(friendId, checkbox) {
-            let checked = checkbox.checked;
-            let method = checked ? "POST" : "DELETE";
-            friendshipRequest(method, friendId);
-        }
+    function isAdmin() {
+        return document.getElementById("isAdmin").getAttribute("value");
+    }
 
-        function friendshipRequest(method, friendId) {
-            const url = `api/v1/friendship/${friendId}`
+    function updateFriendship(friendId, checkbox) {
+        let checked = checkbox.checked;
+        let method = checked ? "POST" : "DELETE";
+        friendshipRequest(method, friendId);
+    }
 
-            fetch(url, {
-                method: method
-            }).catch(ex => console.log(ex));
-        }
+    function friendshipRequest(method, friendId) {
+        const url = `api/v1/friendship/${friendId}`
 
-    </script>
-</head>
-<body>
-<div th:insert="~{base :: site_navbar}"></div>
-    <input id="query" type="text">
-    <button onclick="find()">Поиск</button>
-    <button onclick="showAll()">Показать всех</button>
-<div id = "users">
-    <div th:each="user: ${users}">
-        <p th:if="${user.getIsFriend()}">В друзьях:</p>
-        <input sec:authorize="hasRole('USER')" type="checkbox" th:checked="${user.getIsFriend()}" th:onchange="|updateFriendship(${user.getId()}, this)|">
-        <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
-        <p th:text="${user.getFullName()}"></p>
-        <!--    @{/users/{id}(id=${post.getAuthor().getId()})}-->
-        <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
-        <hr>
-    </div>
-</div>
+        fetch(url, {
+            method: method
+        }).catch(ex => console.log(ex));
+    }
+
+</script>
 </body>
 </html>

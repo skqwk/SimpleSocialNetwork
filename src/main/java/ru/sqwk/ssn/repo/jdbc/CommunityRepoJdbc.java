@@ -77,6 +77,35 @@ public class CommunityRepoJdbc implements CommunityRepo {
     return keyHolder.getKey().longValue();
   }
 
+  @Override
+  public List<CommunityModel> getCommunitiesByName(String name) {
+    String paramName = "%" + name + "%";
+    String query =
+        "SELECT community_id, name, topic, count_members(community_id) AS amount_members FROM community WHERE name LIKE ?;";
+    return jdbc.query(
+        query,
+        (rs, rowNum) ->
+            CommunityModel.builder()
+                .id(rs.getLong("community_id"))
+                .topic(rs.getString("topic"))
+                .name(rs.getString("name"))
+                .amountMembers(rs.getInt("amount_members"))
+                .build(),
+        paramName);
+  }
+
+  @Override
+  public void update(Community updatedCommunity) {
+    String query =
+        "UPDATE community SET name = ?, topic = ?, age_limit = ? WHERE community_id = ?;";
+    jdbc.update(
+        query,
+        updatedCommunity.getName(),
+        updatedCommunity.getTopic(),
+        updatedCommunity.getAgeLimit(),
+        updatedCommunity.getId());
+  }
+
   private CommunityProfileModel mapRowSetToCommunityProfileModel(ResultSet rs, int rowNum)
       throws SQLException {
     List<CommunityMemberModel> members = getMembers(rs.getLong("community_id"));
@@ -85,7 +114,7 @@ public class CommunityRepoJdbc implements CommunityRepo {
         .id(rs.getLong("community_id"))
         .name(rs.getString("name"))
         .topic(rs.getString("topic"))
-        .ageLimit(ageLimit == null ? "Нет" : ageLimit + " +")
+        .ageLimit(ageLimit == null ? "0" : ageLimit)
         .isSuitForAgeLimit(rs.getBoolean("is_suit"))
         .members(members)
         .beIn(

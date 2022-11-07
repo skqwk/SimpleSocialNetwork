@@ -3,6 +3,7 @@ package ru.sqwk.ssn.service;
 
 import ru.sqwk.ssn.domain.Message;
 import ru.sqwk.ssn.dto.MessageDTO;
+import ru.sqwk.ssn.dto.UpdatedMessageDTO;
 import ru.sqwk.ssn.model.MessageModel;
 import ru.sqwk.ssn.model.ProcessedMessageModel;
 
@@ -15,4 +16,8 @@ public interface MessageService {
     List<MessageModel> getChat(Long id, Long friendId);
 
     ProcessedMessageModel saveMessage(MessageDTO messageDTO);
+
+    void deleteMessage(Long messageId);
+
+    void updateMessage(Long messageId, UpdatedMessageDTO messageDTO);
 }

@@ -2,14 +2,19 @@ package ru.sqwk.ssn.repo.jdbc;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.sqwk.ssn.domain.Message;
 import ru.sqwk.ssn.model.MessageModel;
 import ru.sqwk.ssn.repo.MessageRepo;
 import ru.sqwk.ssn.repo.UserRepo;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @AllArgsConstructor
@@ -56,7 +61,58 @@ public class MessageRepoJdbc implements MessageRepo {
         userId);
   }
 
-  private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
+  @Override
+  public Optional<Message> getMessage(Long messageId) {
+    String query = "SELECT * FROM message WHERE message_id = ?;";
+      Message message = jdbc.queryForObject(query, this::mapResultSetToMessage, messageId);
+      return Optional.ofNullable(message);
+  }
+
+  private Message mapResultSetToMessage(ResultSet rs, int rowNum) throws SQLException{
+    return Message.builder()
+            .id(rs.getLong("message_id"))
+            .content(rs.getString("content"))
+            .hasBeenRead(rs.getBoolean("has_been_read"))
+            .senderId(rs.getLong("sender"))
+            .recipientId(rs.getLong("recipient"))
+            .timestamp(rs.getString("timestamp"))
+            .build();
+  }
+
+  @Override
+  public Long save(Message message) {
+    String query = "INSERT INTO message(recipient, sender, has_been_read, content, timestamp) " +
+            "VALUES (?, ?, ?, ?, ?);";
+    KeyHolder keyHolder = new GeneratedKeyHolder();
+
+    jdbc.update(
+            connection -> {
+              PreparedStatement ps =
+                      connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+              ps.setLong(1, message.getRecipientId());
+              ps.setLong(2, message.getSenderId());
+              ps.setBoolean(3, message.getHasBeenRead());
+              ps.setString(4, message.getContent());
+              ps.setString(5, message.getTimestamp());
+              return ps;
+            },
+            keyHolder);
+    return keyHolder.getKey().longValue();
+  }
+
+    @Override
+    public void delete(Long messageId) {
+        String query = "DELETE FROM message WHERE message_id = ?;";
+        jdbc.update(query, messageId);
+    }
+
+    @Override
+    public void update(Long messageId, String messageContent) {
+        String query = "UPDATE message SET content = ? WHERE message_id = ?";
+        jdbc.update(query, messageContent, messageId);
+    }
+
+    private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
     return MessageModel.builder()
         .id(rs.getLong("message_id"))
         .content(rs.getString("content"))

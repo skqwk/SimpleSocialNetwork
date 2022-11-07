@@ -26,6 +26,7 @@ public class ChatWebSocketController {
     log.info("Get message in broker, to = {}, content = {}", messageDTO.getTo(), messageDTO.getContent());
 
     ProcessedMessageModel message = messageService.saveMessage(messageDTO);
-    messagingTemplate.convertAndSendToUser(message.getRecepientLogin(), "/queue/messages", message);
+    messagingTemplate.convertAndSendToUser(message.getRecipientLogin(), "/queue/messages", message);
+    messagingTemplate.convertAndSendToUser(message.getSenderLogin(), "/queue/messages", message);
   }
 }

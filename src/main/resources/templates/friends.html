@@ -1,108 +1,134 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head>
+<head th:insert="base :: common_header(~{::title})">
     <meta charset="UTF-8">
     <title>Friends</title>
 
-    <script>
-        async function find() {
-            let query = document.getElementById("query").value;
-            let url = `api/v1/users?name=${query}`;
-            let users = await getUsers(url);
-            console.log(users);
-            appendUsers(users)
-        }
 
-        async function getUsers(url) {
-            var headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            return await fetch(url, {
-                method: "GET",
-                headers: headers
-            })
-                .catch(ex => console.log(ex))
-                .then(data => data.json());
-        }
-
-        async function showAll() {
-            let url = `api/v1/users?`;
-            let users = await getUsers(url);
-            appendUsers(users);
-        }
-
-        function appendUsers(users) {
-            let usersDiv = document.getElementById("users");
-            usersDiv.innerHTML = '';
-
-            users.forEach(user => {
-                let userDiv = document.createElement('div');
-                userDiv.innerHTML = `
-                    <img alt="user-avatar" src="https://loremflickr.com/50/50">
-                    <p >${user.fullName}</p>
-                    <a href="{/users/${user.id}" >${user.login}</a>
-                    <hr>
-                `
-                usersDiv.append(userDiv);
-            })
-        }
-
-        function friendshipRequest(method, friendId) {
-            const url = `api/v1/friendship/${friendId}`
-
-            fetch(url, {
-                method: method
-            }).catch(ex => console.log(ex));
-        }
-
-        function friendshipCategoryRequest(method, friendId, selectedCategory) {
-            let headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            const url = `api/v1/friendship/${friendId}/category`
-            let category = {selectedCategory}
-            fetch(url, {
-                headers: headers,
-                method: method,
-                body: JSON.stringify(category)
-            }).catch(ex => console.log(ex));
-        }
-
-
-        function deleteFriendship(friendId, checkbox) {
-            friendshipRequest("DELETE", friendId);
-            document.getElementById(friendId).remove();
-        }
-
-        function updateFriendshipCategory(friendId, select) {
-            let selected = select.value;
-            console.log(selected);
-
-            friendshipCategoryRequest("PUT", friendId, selected);
-        }
-
-    </script>
 </head>
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
-<input id="query" type="text">
-<button onclick="find()">Поиск</button>
-<button onclick="showAll()">Показать всех</button>
-<div id="friends">
-    <div th:each="user: ${friends}" th:id="${user.getId()}">
-        <input sec:authorize="hasRole('USER')" type="checkbox" checked
-               th:onchange="|deleteFriendship(${user.getId()}, this)|">
-        <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
-        <p th:text="${user.getFullName()}"></p>
-        <select  th:onchange="|updateFriendshipCategory(${user.getId()}, this)|">
-            <option th:each="i : ${ {'Classmates', 'Work', 'Common', 'Relatives'} }"
-                    th:value="${i}"
-                    th:text="${i}"
-                    th:selected="${i == user.getCategory()}">
-            </option>
-        </select>
-        <!--    @{/users/{id}(id=${post.getAuthor().getId()})}-->
-        <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
-        <hr>
+<div class="container">
+
+    <div class="mb-4 mt-4">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <input id="query" type="text" class="form-control" placeholder="Введите запрос">
+            </div>
+            <div class="col-auto">
+                <select id="selectedCategory" class="custom-select">
+                    <option value="All" selected>All</option>
+                    <option th:each="i : ${ {'Classmates', 'Work', 'Common', 'Relatives'} }"
+                            th:value="${i}"
+                            th:text="${i}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" onclick="find()">Поиск</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="friends">
+        <div th:each="user: ${friends}" th:id="${user.getId()}">
+            <input sec:authorize="hasRole('USER')" type="checkbox" checked
+                   th:onchange="|deleteFriendship(${user.getId()}, this)|">
+            <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
+            <p th:text="${user.getFullName()}"></p>
+            <select th:onchange="|updateFriendshipCategory(${user.getId()}, this)|">
+                <option th:each="i : ${ {'Classmates', 'Work', 'Common', 'Relatives'} }"
+                        th:value="${i}"
+                        th:text="${i}"
+                        th:selected="${i == user.getCategory()}">
+                </option>
+            </select>
+            <!--    @{/users/{id}(id=${post.getAuthor().getId()})}-->
+            <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
+            <hr>
+        </div>
     </div>
 </div>
+
+<script>
+    async function find() {
+        let category = document.getElementById("selectedCategory").value;
+        let query = document.getElementById("query").value;
+        let url = `api/v1/friends?name=${query}&category=${category}`;
+        let friends = await getFriends(url);
+        console.log(friends);
+        appendFriends(friends)
+    }
+
+    async function getFriends(url) {
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        return await fetch(url, {
+            method: "GET",
+            headers: headers
+        })
+            .catch(ex => console.log(ex))
+            .then(data => data.json());
+    }
+
+    function appendFriends(friends) {
+        let friendsDiv = document.getElementById("friends");
+        friendsDiv.innerHTML = '';
+
+        friends.forEach(friend => {
+            let friendDiv = document.createElement('div');
+            friendDiv.innerHTML = `
+                    <input type="checkbox" checked onchange="deleteFriendship(${friend.id}, this)">
+                    <img alt="user-avatar" src="https://loremflickr.com/50/50">
+                    <p >${friend.fullName}</p>
+                     <select  onchange="updateFriendshipCategory(${friend.id}, this)">
+                     <option value="Classmates" ${"Classmates" === friend.category ? "selected" : ""}>Classmates</option>
+                     <option value="Work" ${"Work" === friend.category ? "selected" : ""}>Work</option>
+                     <option value="Common" ${"Common" === friend.category ? "selected" : ""}>Common</option>
+                     <option value="Relatives" ${"Relatives" === friend.category ? "selected" : ""}>Relatives</option>
+                     </option>
+                     </select>
+                    <a href="{/users/${friend.id}" >${friend.login}</a>
+                    <hr>
+                `
+            friendsDiv.append(friendDiv);
+        })
+    }
+
+    function friendshipRequest(method, friendId) {
+        const url = `api/v1/friendship/${friendId}`
+
+        fetch(url, {
+            method: method
+        }).catch(ex => console.log(ex));
+    }
+
+    function friendshipCategoryRequest(method, friendId, selectedCategory) {
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        const url = `api/v1/friendship/${friendId}/category`
+        let category = {selectedCategory}
+        fetch(url, {
+            headers: headers,
+            method: method,
+            body: JSON.stringify(category)
+        }).catch(ex => console.log(ex));
+    }
+
+
+    function deleteFriendship(friendId, checkbox) {
+        friendshipRequest("DELETE", friendId);
+        document.getElementById(friendId).remove();
+    }
+
+    function updateFriendshipCategory(friendId, select) {
+        let selected = select.value;
+        console.log(selected);
+
+        friendshipCategoryRequest("PUT", friendId, selected);
+    }
+
+</script>
 </body>
 </html>

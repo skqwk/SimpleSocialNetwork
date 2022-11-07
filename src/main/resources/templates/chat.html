@@ -1,101 +1,188 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:insert="base :: common_header(~{::title})">
     <meta charset="UTF-8">
     <title>Chat</title>
-    <script src="/js/sockjs-0.3.4.js"></script>
-    <script src="/js/stomp.js"></script>
-    <script type="text/javascript">
 
-        var stompClient = null;
-        function setConnected(connected) {
-            document.getElementById('connect').disabled = connected;
-            document.getElementById('disconnect').disabled = !connected;
-            document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
-            document.getElementById('response').innerHTML = '';
-        }
-
-        let nowUser = null;
-        function connect() {
-            getNowUser();
-            var socket = new SockJS('/ws');
-            stompClient = Stomp.over(socket);
-            stompClient.connect({}, onConnected);
-        }
-
-        function getNowUser() {
-            const url = `api/v1/auth`;
-            var headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            return fetch(url, {
-                headers: headers,
-                method: "GET"
-            }).catch(ex => console.log(ex))
-                .then(resp => resp.json())
-            .then(resp => nowUser = resp.login)
-        }
-
-        const onConnected = () => {
-            console.log('Connected');
-            console.log(nowUser)
-            stompClient.subscribe(`/user/${nowUser}/queue/messages`, onMessageReceived);
-
-        }
-
-        const onMessageReceived = (msg) => {
-            const data = JSON.parse(msg.body);
-            console.log(data);
-        }
-
-        function disconnect() {
-            if(stompClient != null) {
-                stompClient.disconnect();
-            }
-            setConnected(false);
-            console.log("Disconnected");
-        }
-
-        function showMessageOutput(messageOutput) {
-            console.log(messageOutput)
-            // var response = document.getElementById('response');
-            // var p = document.createElement('pre');
-            // p.style.wordWrap = 'break-word';
-            // p.appendChild(document.createTextNode("[" + messageOutput.sentAt + "] " + messageOutput.from + "> " + messageOutput.content ));
-            // response.appendChild(p);
-        }
-
-        function sendMessage() {
-            let content = document.getElementById('content').value;
-            //var to = parseInt(document.location.href.split("/")[3].split("?")[1].substr(7));
-            let to = document.getElementById("recipient").getAttribute("value");
-            let from = document.getElementById("sender").getAttribute("value");
-            stompClient.send("/app/chat", {}, JSON.stringify({'to':to, 'from': from, 'content':content}));
-
-        }
-
-        function appendMessage(message) {
-            console.log(message);
-        }
-    </script>
 </head>
 <body onload="connect()">
+
 <div th:insert="~{base :: site_navbar}"></div>
-<div>
-    <div id="sender" th:value="${sender}"></div>
-    <div id="recipient" th:value="${recipient}" ></div>
 
-    <div id="conversationDiv">
-        <input type="text" id="content" placeholder="Write a message..."/>
-        <button id="sendMessage" onclick="sendMessage()">Send</button>
-    </div>
+<div class="container">
 
-    <div th:each="message: ${messages}" th:id="${message.getId()}" class="message">
-        <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>
-        <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}" th:text="${message.getAuthor().getLogin()}"></a>
-        <p th:text="${message.getContent()}"></p>
-        <p th:text="${message.getSentAt()}"></p>
-        <hr>
+    <div>
+        <div id="sender" th:value="${sender}"></div>
+        <div id="recipient" th:value="${recipient}"></div>
+        <p th:text="|Переписка с ${recipient}|"></p>
+        <div id="conversationDiv" class="row mb-4">
+            <div class="col-6">
+                <input type="text" id="content" placeholder="Напишите сообщение..." class="form-control"/>
+
+            </div>
+            <div class="col-2">
+                <button id="sendMessage" onclick="sendMessage()" class="btn btn-primary">Отправить</button>
+
+            </div>
+        </div>
+
+        <div class="col-8 align-items-center justify-content-center align-self-center">
+            <div th:each="message: ${messages}" th:id="${message.getId()}"
+                 th:class="'row w-8 '+${message.getOwn() ? 'justify-content-end' : 'justify-content-start'}">
+                <div>
+                    <div th:class="'row border p-1 rounded justify-content-between ' + ${message.getOwn() ? 'bg-info text-white' : 'bg-light text-dark'}">
+                        <!--                        <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>-->
+
+                        <!--                        <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}"-->
+                        <!--                           th:text="${message.getAuthor().getLogin()}"></a>-->
+
+                        <p th:text="${message.getContent()}" th:id="|content-${message.getId()}|" class="me-1"></p>
+                        <div class="align-self-end justify-content-evenly ms-1">
+                            <i class="fas fa-pen" th:if="${message.getOwn()}"
+                               th:onclick="|updateMessage(${message.getId}, this)|"></i>
+                            <i class="fas fa-trash" th:onclick="|deleteMessage(${message.getId})|"></i>
+                        </div>
+                    </div>
+                    <p th:class="'font-italic text-muted ' + ${message.getOwn() ? 'text-right' :'text-left'}"><small th:text="${message.getSentAt()}"></small></p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script src="/js/sockjs-0.3.4.js"></script>
+<script src="/js/stomp.js"></script>
+<script type="text/javascript">
+
+    var stompClient = null;
+
+    function setConnected(connected) {
+        document.getElementById('connect').disabled = connected;
+        document.getElementById('disconnect').disabled = !connected;
+        document.getElementById('conversationDiv').style.visibility = connected ? 'visible' : 'hidden';
+        document.getElementById('response').innerHTML = '';
+    }
+
+    let senderLogin = null;
+    let recipientLogin = null;
+
+    function connect() {
+        initUsersLogin();
+        var socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, onConnected);
+    }
+
+    function initUsersLogin() {
+        senderLogin = document.getElementById("sender").getAttribute("value");
+        recipientLogin = document.getElementById("recipient").getAttribute("value");
+    }
+
+    const onConnected = () => {
+        console.log('Connected');
+        console.log(senderLogin)
+        stompClient.subscribe(`/user/${senderLogin}/queue/messages`, onMessageReceived);
+
+    }
+
+    const onMessageReceived = (msg) => {
+        const data = JSON.parse(msg.body);
+        console.log(data);
+        if (data.senderLogin === senderLogin || data.senderLogin === recipientLogin) {
+            appendReceivedMessage(data);
+        }
+    }
+
+    function appendSentMessage(message) {
+        let messagesDiv = document.getElementById('messages');
+        let messageDiv = document.createElement('div');
+
+        messageDiv.setAttribute("id", message.id);
+        messageDiv.innerHTML = `
+                        <a href="/profile">Me</a>
+                        <p>${message.content}</p>
+                        <p>${new Date().toLocaleDateString()}</p>
+                        <hr>
+                        `;
+        messagesDiv.prepend(messageDiv);
+    }
+
+    function appendReceivedMessage(message) {
+        let messagesDiv = document.getElementById("messages");
+        let messageDiv = document.createElement('div');
+        messageDiv.setAttribute("id", message.id);
+        let name = message.senderLogin === senderLogin ? 'Me' : message.senderLogin
+        messageDiv.innerHTML = `
+                <a href="/users/${message.senderId}">${name}</a>
+                <p>${message.content}</p>
+                <p>${message.sentAt}</p>
+                <hr>
+                `;
+        messagesDiv.prepend(messageDiv);
+
+    }
+
+    function sendMessage() {
+        let content = document.getElementById('content').value;
+        let to = document.getElementById("recipient").getAttribute("value");
+        let from = document.getElementById("sender").getAttribute("value");
+        let message = {'to': to, 'from': from, 'content': content};
+        stompClient.send("/app/chat", {}, JSON.stringify(message));
+        document.getElementById('content').value = '';
+    }
+
+    function deleteMessage(messageId) {
+        url = `/api/v1/messages/${messageId}`
+
+        fetch(url, {
+            method: "DELETE"
+        })
+            .catch(ex => console.log(ex));
+        document.getElementById(messageId).remove();
+    }
+
+    function updateMessage(messageId, button) {
+        console.log("Want to edit: " + messageId);
+        console.log(button.getAttribute("class"));
+        if (button.getAttribute("class") === 'fas fa-pen') {
+            let contentElement = document.getElementById(`content-${messageId}`);
+            let updateContentElement = document.createElement("input");
+            updateContentElement.setAttribute("type", "text");
+            updateContentElement.setAttribute("class", "form-control")
+            updateContentElement.setAttribute("value", contentElement.innerText);
+            contentElement.parentNode.replaceChild(updateContentElement, contentElement);
+            updateContentElement.setAttribute("name", "content");
+            button.setAttribute('class', 'fas fa-save');
+            button.class = 'fas fa-save'
+        } else if (button.innerText === 'Сохранить') {
+            let inputContent = document.getElementById(`content-${messageId}`);
+            let contentElement = document.createElement("p");
+            let updatedContent = inputContent.value;
+            contentElement.innerText = inputContent.value;
+            inputContent.parentNode.replaceChild(contentElement, inputContent);
+            contentElement.setAttribute("name", "content");
+
+            updateMessageRequest(messageId, updatedContent);
+
+            button.setAttribute('class', 'fas fa-pen');
+        }
+
+    }
+
+    function updateMessageRequest(messageId, updatedContent) {
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        let url = `/api/v1/messages/${messageId}`;
+        let messageContent = updatedContent;
+        fetch(url, {
+            method: "PUT",
+            body: JSON.stringify({messageContent}),
+            headers: headers
+        })
+            .catch(ex => console.log(ex));
+    }
+
+</script>
+
 </body>
 </html>

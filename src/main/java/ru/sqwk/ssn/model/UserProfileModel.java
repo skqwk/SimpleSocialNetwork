@@ -13,4 +13,5 @@ public class UserProfileModel {
     private Long id;
     private String birthDate;
     private String email;
+    private Boolean isFriend;
 }

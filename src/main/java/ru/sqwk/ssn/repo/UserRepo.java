@@ -3,6 +3,7 @@ package ru.sqwk.ssn.repo;
 import ru.sqwk.ssn.domain.User;
 import ru.sqwk.ssn.dto.UpdatedUserDTO;
 import ru.sqwk.ssn.model.AuthorModel;
+import ru.sqwk.ssn.model.FriendChatModel;
 import ru.sqwk.ssn.model.FriendModel;
 import ru.sqwk.ssn.model.UserModel;
 import ru.sqwk.ssn.model.UserProfileModel;
@@ -27,4 +28,8 @@ public interface UserRepo {
     void update(Long id, UpdatedUserDTO updatedUserDTO);
 
     List<FriendModel> getFriends();
+
+    List<FriendChatModel> getFriendChats();
+
+    List<FriendModel> getFriendsByName(String name);
 }

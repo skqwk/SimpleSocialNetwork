@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:insert="base :: common_header(~{::title})">
     <meta charset="UTF-8">
     <title>SSN</title>
 </head>
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
-<div>
-    <h1>SSN - Simple Social Network</h1>
+<div class="container">
+    <h1 class="text-center">SSN - Simple Social Network</h1>
 </div>
 </body>
 </html>

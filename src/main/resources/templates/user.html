@@ -1,52 +1,99 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="UTF-8">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: common_header(~{::title})">
     <title th:text="${user.getLogin()}"></title>
-
-
 </head>
 <body>
 
-<div th:with="isNowUser=${#authentication.getName().equals(user.getLogin())}">
-    <div th:insert="~{base :: site_navbar}"></div>
+<div th:insert="~{base :: site_navbar}"></div>
+<div class="container" th:with="isNowUser=${#authentication.getName().equals(user.getLogin())}">
     <img th:src="@{https://loremflickr.com/100/100}"/>
 
-    <h2 th:if="${#authorization.expression('hasRole(''USER'')')}">Профиль пользователя</h2>
-    <h2 th:if="${#authorization.expression('hasRole(''ADMIN'')')}">Профиль администратора</h2>
+    <!--    <h2 th:if="${#authorization.expression('hasRole(''USER'')')}">Профиль</h2>-->
+    <!--    <h2 th:if="${#authorization.expression('hasRole(''ADMIN'')')}">Профиль администратора</h2>-->
+    <h2>Профиль</h2>
     <form th:object="${user}" onsubmit="return update();" action="/profile" method="get">
 
         <!-- Username input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="login">Логин</label>
-            <input th:field="*{login}" type="text" id="login" class="form-control" disabled }
-                   required/>
+            <input th:field="*{login}" type="text" id="login" class="form-control" disabled required/>
         </div>
 
         <!-- FullName input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="full-name">Полное имя</label>
-            <input th:field="*{fullName}" id="full-name" type="text" th:disabled="${!isNowUser}" required/>
+            <input th:field="*{fullName}" id="full-name" type="text" class="form-control" th:disabled="${!isNowUser}"
+                   required/>
         </div>
 
         <!-- BirthDate input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="birth-date">День рождения</label>
-            <input th:field="*{birthDate}" id="birth-date" type="date" th:disabled="${!isNowUser}" required/>
+            <input th:field="*{birthDate}" id="birth-date" type="date" class="form-control" th:disabled="${!isNowUser}"
+                   required/>
         </div>
 
         <!-- Email input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="email">Адрес электронной почты</label>
-            <input th:field="*{email}" id="email" type="email" th:disabled="${!isNowUser}" required/>
+            <input th:field="*{email}" id="email" type="email" class="form-control" th:disabled="${!isNowUser}"
+                   required/>
         </div>
 
         <!-- Submit button -->
-<!--        <button th:if="${isNowUser}" onclick="update()" class="btn btn-primary btn-block mb-4">Обновить</button>-->
+        <!--        <button th:if="${isNowUser}" onclick="update()" class="btn btn-primary btn-block mb-4">Обновить</button>-->
         <button th:if="${isNowUser}" type="submit" class="btn btn-primary btn-block mb-4">Обновить</button>
     </form>
 
+    <button class="btn btn-primary" id="go-to-chat-button" th:if="${!isNowUser && #authorization.expression('hasRole(''USER'')')}" th:disabled="${!user.getIsFriend()}"
+            th:onclick="|goToChat(${user.getId()})|">Перейти к переписке
+    </button>
+    <button class="btn btn-primary" id="remove-friend-button" th:hidden="${isNowUser || !user.getIsFriend() || #authorization.expression('hasRole(''ADMIN'')')}"
+            th:onclick="|deleteFriendship(${user.getId()})|">Удалить из друзей
+    </button>
+    <button class="btn btn-primary" id="add-friend-button" th:hidden="${isNowUser || user.getIsFriend() || #authorization.expression('hasRole(''ADMIN'')')}"
+            th:onclick="|addFriendship(${user.getId()})|">Добавить в друзья
+    </button>
+
     <script>
+        function goToChat(friendId) {
+            console.log(friendId);
+            document.location.href = `/chat?friend=${friendId}`;
+        }
+
+        function deleteFriendship(friendId) {
+            updateFriendship(friendId, false);
+        }
+
+        function addFriendship(friendId) {
+            updateFriendship(friendId, true);
+        }
+
+        function updateFriendship(friendId, create) {
+            let method = create ? "POST" : "DELETE";
+            friendshipRequest(method, friendId);
+            let goToChatButton = document.getElementById("go-to-chat-button");
+            let removeFriendButton = document.getElementById("remove-friend-button");
+            let addFriendButton = document.getElementById("add-friend-button");
+            if (create) {
+                addFriendButton.setAttribute("hidden", "true");
+                removeFriendButton.removeAttribute("hidden");
+                goToChatButton.removeAttribute("disabled");
+            } else {
+                addFriendButton.removeAttribute("hidden");
+                removeFriendButton.setAttribute("hidden", "true")
+                goToChatButton.setAttribute("disabled", "true");
+            }
+        }
+
+        function friendshipRequest(method, friendId) {
+            const url = `/api/v1/friendship/${friendId}`
+
+            fetch(url, {
+                method: method
+            }).catch(ex => console.log(ex));
+        }
 
         function update() {
             let fullName = getValue("full-name");
@@ -84,6 +131,8 @@
         function getValue(name) {
             return document.getElementById(name).value;
         }
+
+
     </script>
 
 </div>

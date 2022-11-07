@@ -1,27 +1,54 @@
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:insert="base :: common_header(~{::title})">
     <meta charset="UTF-8">
     <title>Messages</title>
-    <style>
-        /*.post {*/
-        /*    cursor: pointer;*/
-        /*}*/
-    </style>
 
 
 </head>
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
-<div id="messages">
-    <div th:each="message: ${messages}" th:id="${message.getId()}" class="message">
-        <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>
-        <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}" th:text="${message.getAuthor().getLogin()}"></a>
-        <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>
-        <p th:text="${message.getContent()}"></p>
-        <p th:text="${message.getSentAt()}"></p>
-        <hr>
+<div class="container">
+
+    <div class="mb-4 mt-4">
+        <div class="row align-items-center">
+            <div class="col-6">
+
+                <select id="selectedChat" class="custom-select">
+                    <option value="-1" selected>Выберите друга для переписки</option>
+                    <option th:each="friendChat : ${friendChats}"
+                            th:value="${friendChat.getFriendId()}"
+                            th:text="${friendChat.getFriendLogin()}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" onclick="goToChat()">Перейти к переписке</button>
+            </div>
+        </div>
+    </div>
+    <div id="messages">
+        <div th:each="message: ${messages}" th:id="${message.getId()}" class="message">
+            <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>
+            <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}"
+               th:text="${message.getAuthor().getLogin()}"></a>
+            <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>
+            <p th:text="${message.getContent()}"></p>
+            <p th:text="${message.getSentAt()}" class="font-weight-light text-muted"></p>
+            <hr>
+        </div>
     </div>
 </div>
+
+
+<script>
+    function goToChat() {
+        let selectedChat = document.getElementById('selectedChat').value;
+        if (selectedChat > 0) {
+            console.log(selectedChat);
+            document.location.href = `/chat?friend=${selectedChat}`;
+        }
+    }
+</script>
 </body>
 </html>

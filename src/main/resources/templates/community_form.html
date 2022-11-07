@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="base :: common_header(~{::title})">
+    <title>Создать общество</title>
+</head>
 <body>
+<div th:insert="~{base :: site_navbar}"></div>
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <form th:action="@{/community}" th:object="${community}" method="POST">
         <h2>Создание общества</h2>
@@ -14,7 +18,7 @@
         <!-- Topic input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="topic">Тема</label>
-           <select th:field="*{topic}" name="topic" id="topic">
+           <select th:field="*{topic}" name="topic" id="topic" class="custom-select">
                <option value="IT">IT</option>
                <option value="Music">Music</option>
                <option value="Art">Art</option>
@@ -27,7 +31,7 @@
         <!-- AgeLimit input -->
         <div class="form-outline mb-4">
             <label class="form-label" for="age-limit">Возрастной лимит</label>
-            <input th:field="*{ageLimit}" id="age-limit"  type="number"/>
+            <input th:field="*{ageLimit}" id="age-limit"  type="number" class="form-control"/>
         </div>
 
         <button type="submit" class="btn btn-primary btn-block mb-4">Создать общество</button>

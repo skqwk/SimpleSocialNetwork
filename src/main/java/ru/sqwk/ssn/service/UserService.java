@@ -1,6 +1,7 @@
 package ru.sqwk.ssn.service;
 
 import ru.sqwk.ssn.dto.UpdatedUserDTO;
+import ru.sqwk.ssn.model.FriendChatModel;
 import ru.sqwk.ssn.model.FriendModel;
 import ru.sqwk.ssn.model.UserModel;
 import ru.sqwk.ssn.model.UserProfileModel;
@@ -18,4 +19,10 @@ public interface UserService {
 
     void updateUser(Long id, UpdatedUserDTO updatedUserDTO);
     UserAccount getUserByName(String name);
+
+    List<FriendChatModel> getFriendChats();
+
+    List<FriendModel> getFriendsByCategory(String category);
+
+    List<FriendModel> getFriendsByCategoryAndName(String category, String name);
 }

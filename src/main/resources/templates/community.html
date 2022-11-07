@@ -1,80 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head th:insert="base :: common_header(~{::title})">
     <meta charset="UTF-8">
     <title th:text="${community.getName()}"></title>
-    <script>
-        async function join() {
-            document.getElementById("join-button").setAttribute("disabled", "true");
-            document.getElementById("leave-button").removeAttribute("disabled");
-            let member = await updateMembership("POST");
-            console.log(member);
-            console.log(member.login);
-            appendMember(member);
-        }
 
-        async function deleteCommunity(communityId) {
-            const url = `/api/v1/community/${communityId}`
-            await fetch(url, {
-                method: "DELETE"
-            }).catch(ex => console.log(ex));
-            alert("delete!")
-            document.location.href='/communities'
-        }
+</head>
+<body>
+<div th:insert="~{base :: site_navbar}"></div>
+<div class="container">
 
-        function appendMember(member) {
+    <div th:with="isUser=${#authorization.expression('hasRole(''USER'')')}">
 
-            let membersDiv = document.getElementById("members");
-            let memberDiv = document.createElement("div");
-            memberDiv.setAttribute("id", member.login);
-            memberDiv.innerHTML = `
+        <img th:src="@{https://loremflickr.com/100/100}">
+
+        <form th:if="${!isUser}" th:object="${community}" th:onsubmit="|return updateCommunity(${community.getId()});|">
+            <!-- Name input -->
+            <div class="form-outline mb-4">
+                <label class="form-label" for="name">Название</label>
+                <input th:field="*{name}" type="text" id="name" class="form-control" required/>
+            </div>
+
+            <!-- Topic input -->
+            <div class="form-outline mb-4">
+                <label class="form-label" for="topic">Тема</label>
+                <select th:field="*{topic}" name="topic" id="topic" class="custom-select">
+                    <option th:each="i : ${ {'IT', 'Music', 'Art', 'News', 'Humour', 'Food'} }"
+                            th:value="${i}"
+                            th:text="${i}"
+                            th:selected="${i == topic}">
+                    </option>
+                </select>
+            </div>
+
+            <!-- AgeLimit input -->
+            <div class="form-outline mb-4">
+                <label class="form-label" for="age-limit">Возрастной лимит</label>
+                <input th:field="*{ageLimit}" id="age-limit" type="number" class="form-control"/>
+            </div>
+
+            <!-- CreationDate input -->
+            <div class="form-outline mb-4">
+                <label class="form-label" for="age-limit">Дата создания</label>
+                <input th:field="*{creationDate}" id="creation-date" class="form-control" disabled type="date"/>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mb-4">Обновить общество</button>
+            <button id="delete-button" class="btn btn-danger btn-block mb-4" th:onclick="|deleteCommunity(${community.getId()})|">Удалить сообщество</button>
+        </form>
+
+        <div th:if="${isUser}">
+
+            <br>
+            <h1 th:text="${community.getName()}"></h1>
+            <h3 th:ifth:text="|Возрастные ограничения: ${community.getAgeLimit()}|"></h3>
+            <button id="join-button" th:disabled="${community.getBeIn() || !community.getIsSuitForAgeLimit()}"
+                    onclick="join()">Вступить
+            </button>
+            <button id="leave-button" th:disabled="${!community.getBeIn()}" onclick="leave()">Покинуть</button>
+            <h3 th:text="${community.getTopic}"></h3>
+            <h3 th:text="${community.getCreationDate()}"></h3>
+
+        </div>
+
+        <h3 th:text="|Всего участников: ${community.getMembers().size()}|"></h3>
+        <div id="members">
+            <div th:id="${member.getLogin()}" th:each="member : ${community.getMembers()}">
+                <p th:text="${member.getLogin()}"></p>
+                <p th:text="${member.getEntryDate()}"></p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<script>
+    async function join() {
+        document.getElementById("join-button").setAttribute("disabled", "true");
+        document.getElementById("leave-button").removeAttribute("disabled");
+        let member = await updateMembership("POST");
+        console.log(member);
+        console.log(member.login);
+        appendMember(member);
+    }
+
+    async function deleteCommunity(communityId) {
+        const url = `/api/v1/community/${communityId}`
+        await fetch(url, {
+            method: "DELETE"
+        }).catch(ex => console.log(ex));
+        alert("delete!")
+        document.location.href = '/communities'
+    }
+
+    function appendMember(member) {
+
+        let membersDiv = document.getElementById("members");
+        let memberDiv = document.createElement("div");
+        memberDiv.setAttribute("id", member.login);
+        memberDiv.innerHTML = `
                 <p>${member.login}</p>
                 <p>${member.entryDate}</p>
             `;
-            membersDiv.prepend(memberDiv);
+        membersDiv.prepend(memberDiv);
 
+    }
+
+    async function leave() {
+        document.getElementById("join-button").removeAttribute("disabled");
+        document.getElementById("leave-button").setAttribute("disabled", "true");
+        let deletedMember = await updateMembership("DELETE");
+        console.log(deletedMember.login);
+        document.getElementById(deletedMember.login).remove();
+    }
+
+    async function updateMembership(method) {
+        let communityId = parseInt(document.location.href.split("/")[4]);
+        let headers = new Headers();
+        let url = `/membership/${communityId}`;
+
+        return await fetch(url, {
+            method: method,
+            headers: headers
+        })
+            .catch(ex => console.log(ex))
+            .then(data => data.json());
+
+    }
+
+    function updateCommunity(communityId) {
+        console.log(communityId);
+        let name = getValue("name");
+        let topic = getValue("topic");
+        let ageLimit = getValue("age-limit");
+
+        let updatedCommunity = {
+            name: name,
+            topic: topic,
+            ageLimit: ageLimit,
         }
 
-        async function leave() {
-            document.getElementById("join-button").removeAttribute("disabled");
-            document.getElementById("leave-button").setAttribute("disabled", "true");
-            let deletedMember = await updateMembership("DELETE");
-            console.log(deletedMember.login);
-            document.getElementById(deletedMember.login).remove();
-        }
+        console.log(updatedCommunity);
+        updateQuery(communityId, updatedCommunity);
+    }
 
-        async function updateMembership(method)  {
-            let communityId = parseInt(document.location.href.split("/")[4]);
-            let headers = new Headers();
-            let url = `/membership/${communityId}`;
+    function updateQuery(communityId, updatedCommunity) {
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        let url = `/api/v1/community/${communityId}`;
 
-            return await fetch(url, {
-                method: method,
-                headers: headers
-            })
-                .catch(ex => console.log(ex))
-                .then(data => data.json());
+        fetch(url, {
+            method: "PUT",
+            body: JSON.stringify(updatedCommunity),
+            headers: headers
+        })
+            .catch(ex => console.log(ex));
 
-        }
-    </script>
-</head>
-<body>
-<div th:with="isUser=${#authorization.expression('hasRole(''USER'')')}">
-    <img th:src="@{https://loremflickr.com/100/100}">
-    <br>
-    <h1 th:text="${community.getName()}"></h1>
-    <h3 th:text="|Возрастные ограничения: ${community.getAgeLimit()}|"></h3>
-    <button id="join-button" th:if="${isUser}" th:disabled="${community.getBeIn() || !community.getIsSuitForAgeLimit()}" onclick="join()">Вступить</button>
-    <button id="leave-button" th:if="${isUser}" th:disabled="${!community.getBeIn()}" onclick="leave()">Покинуть</button>
-    <button id="delete-button" th:if="${!isUser}" th:onclick="|deleteCommunity(${community.getId()})|">Удалить сообщество</button>
-    <h3 th:text="${community.getTopic}"></h3>
-    <h3 th:text="${community.getCreationDate()}"></h3>
-    <div id="members">
-        <div th:id="${member.getLogin()}" th:each="member : ${community.getMembers()}">
-            <p th:text="${member.getLogin()}"></p>
-            <p th:text="${member.getEntryDate()}"></p>
-        </div>
-    </div>
-</div>
+
+    }
+
+    function getValue(name) {
+        return document.getElementById(name).value;
+    }
+</script>
 </body>
 </html>

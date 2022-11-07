@@ -1,16 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head th:insert="base :: common_header(~{::title})">
     <meta charset="UTF-8">
-    <title>Communitites</title>
+    <title>Communities</title>
+
+
 </head>
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
-<div th:each="community: ${communities}">
-    <a th:href="@{/communities/{id}(id=${community.getId()})}" th:text="${community.getName()}"></a>
-    <p th:text="${community.getTopic()}"></p>
-    <p th:text="${community.getAmountMembers()}"></p>
-    <hr>
+<div class="container">
+    <div class="mb-4 mt-4" >
+
+        <div class="row align-items-center" >
+            <!--        <label class="form-label" for="login">Логин</label>-->
+            <!--        <input th:field="*{login}" type="text" id="login" class="form-control" disabled required/>-->
+            <div class="col-sm-6">
+                <input id="query" type="text" class="form-control" placeholder="Введите запрос">
+
+            </div>
+            <div class="col-auto">
+
+                <select id="selectedTopic" class="custom-select">
+                    <option value="All" selected>All</option>
+                    <option th:each="i : ${ {'Music', 'Art', 'News', 'Humour', 'Food', 'IT'} }"
+                            th:value="${i}"
+                            th:text="${i}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" onclick="find()">Поиск</button>
+            </div>
+        </div>
+    </div>
+    <div id="communities">
+        <div th:each="community: ${communities}">
+            <a th:href="@{/communities/{id}(id=${community.getId()})}" th:text="${community.getName()}"></a>
+            <span th:text="${community.getTopic()}"  class="badge badge-pill badge-info"></span>
+            <p th:text="${community.getAmountMembers()}"></p>
+            <hr>
+        </div>
+    </div>
 </div>
+
+<script>
+    async function find() {
+        let topic = document.getElementById("selectedTopic").value;
+        let query = document.getElementById("query").value;
+        let url = `api/v1/communities?name=${query}&topic=${topic}`;
+        let communities = await getCommunities(url);
+        console.log(communities);
+        appendCommunities(communities)
+    }
+
+    async function getCommunities(url) {
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        return await fetch(url, {
+            method: "GET",
+            headers: headers
+        })
+            .catch(ex => console.log(ex))
+            .then(data => data.json());
+    }
+
+    function appendCommunities(communities) {
+        let communitiesDiv = document.getElementById("communities");
+        communitiesDiv.innerHTML = '';
+
+        communities.forEach(community => {
+            let communityDiv = document.createElement('div');
+            communityDiv.innerHTML = `
+                    <div>
+                        <a href="/communities/${community.id}">${community.name}</a>
+                        <span class="badge badge-pill badge-info">${community.topic}</span>
+                        <p>${community.amountMembers}</p>
+                        <hr>
+                    </div>
+                `
+            communitiesDiv.append(communityDiv);
+        })
+    }
+</script>
 </body>
 </html>

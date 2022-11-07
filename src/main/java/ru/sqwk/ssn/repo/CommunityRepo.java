@@ -14,4 +14,8 @@ public interface CommunityRepo {
     void delete(Long communityId);
 
     Long save(Community community);
+
+    List<CommunityModel> getCommunitiesByName(String name);
+
+    void update(Community updatedCommunity);
 }
