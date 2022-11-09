@@ -44,6 +44,7 @@ public class MessagesViewController {
     model.addAttribute("messages", messages);
     model.addAttribute("sender", userAccount.getLogin());
     model.addAttribute("recipient", userService.getUser(friendId).getLogin());
+    model.addAttribute("recipientId", friendId);
     return "chat";
   }
 }

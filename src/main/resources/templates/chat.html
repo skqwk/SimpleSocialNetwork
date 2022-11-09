@@ -14,7 +14,8 @@
     <div>
         <div id="sender" th:value="${sender}"></div>
         <div id="recipient" th:value="${recipient}"></div>
-        <p th:text="|Переписка с ${recipient}|"></p>
+        <p>Переписка с <a th:href="@{/users/{id}(id=${recipientId})}" th:text="${recipient}"></a> </p>
+
         <div id="conversationDiv" class="row mb-4">
             <div class="col-6">
                 <input type="text" id="content" placeholder="Напишите сообщение..." class="form-control"/>
@@ -26,7 +27,7 @@
             </div>
         </div>
 
-        <div class="col-8 align-items-center justify-content-center align-self-center">
+        <div id="messages" class="col-8 align-items-center justify-content-center align-self-center">
             <div th:each="message: ${messages}" th:id="${message.getId()}"
                  th:class="'row w-8 '+${message.getOwn() ? 'justify-content-end' : 'justify-content-start'}">
                 <div>
@@ -39,8 +40,8 @@
                         <p th:text="${message.getContent()}" th:id="|content-${message.getId()}|" class="me-1"></p>
                         <div class="align-self-end justify-content-evenly ms-1">
                             <i class="fas fa-pen" th:if="${message.getOwn()}"
-                               th:onclick="|updateMessage(${message.getId}, this)|"></i>
-                            <i class="fas fa-trash" th:onclick="|deleteMessage(${message.getId})|"></i>
+                               th:onclick="|updateMessage(${message.getId}, this)|" role='button'></i>
+                            <i class="fas fa-trash" th:onclick="|deleteMessage(${message.getId})|" role='button'></i>
                         </div>
                     </div>
                     <p th:class="'font-italic text-muted ' + ${message.getOwn() ? 'text-right' :'text-left'}"><small th:text="${message.getSentAt()}"></small></p>
@@ -111,13 +112,48 @@
         let messagesDiv = document.getElementById("messages");
         let messageDiv = document.createElement('div');
         messageDiv.setAttribute("id", message.id);
-        let name = message.senderLogin === senderLogin ? 'Me' : message.senderLogin
+        let isNowUser = message.senderLogin === senderLogin;
+        let name = isNowUser ? 'Me' : message.senderLogin;
+        messageDiv.classList.add('row');
+        messageDiv.classList.add('w-8');
+        if (isNowUser) {
+            messageDiv.classList.add('justify-content-end');
+        } else {
+            messageDiv.classList.add('justify-content-start');
+        }
+
+        let controlDiv = document.createElement('div');
+        controlDiv.setAttribute("class", "align-self-end justify-content-evenly ms-1");
+        if (isNowUser) {
+            controlDiv.innerHTML = `
+                <i class="fas fa-pen" onclick="updateMessage(${message.id}, this)" role='button'></i>
+                <i class="fas fa-trash" onclick="deleteMessage(${message.id})" role='button'></i>
+            `;
+        } else {
+            controlDiv.innerHTML = `
+            <i class="fas fa-trash" onclick="deleteMessage(${message.id})" role='button'></i>
+            `
+        }
+
         messageDiv.innerHTML = `
-                <a href="/users/${message.senderId}">${name}</a>
-                <p>${message.content}</p>
-                <p>${message.sentAt}</p>
-                <hr>
-                `;
+                <div>
+                    <div class="row border p-1 rounded justify-content-between ${isNowUser ? 'bg-info text-white' : 'bg-light text-dark'}">
+                        <p id="content-${message.id}" class="me-1">${message.content}</p>
+                        <div class="align-self-end justify-content-evenly ms-1">
+                            ${controlDiv.innerHTML}
+                        </div>
+                    </div>
+                    <p th:class="font-italic text-muted ${isNowUser ? 'text-right' :'text-left'}"><small>${message.sentAt}</small></p>
+                </div>
+        `
+
+
+        // messageDiv.innerHTML = `
+        //         <a href="/users/${message.senderId}">${name}</a>
+        //         <p>${message.content}</p>
+        //         <p>${message.sentAt}</p>
+        //         <hr>
+        //         `;
         messagesDiv.prepend(messageDiv);
 
     }
@@ -152,9 +188,10 @@
             updateContentElement.setAttribute("value", contentElement.innerText);
             contentElement.parentNode.replaceChild(updateContentElement, contentElement);
             updateContentElement.setAttribute("name", "content");
+            updateContentElement.setAttribute("id", `content-${messageId}`)
             button.setAttribute('class', 'fas fa-save');
             button.class = 'fas fa-save'
-        } else if (button.innerText === 'Сохранить') {
+        } else if (button.getAttribute("class") === 'fas fa-save') {
             let inputContent = document.getElementById(`content-${messageId}`);
             let contentElement = document.createElement("p");
             let updatedContent = inputContent.value;

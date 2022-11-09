@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.sqwk.ssn.domain.Community;
 import ru.sqwk.ssn.dto.NewCommunityDTO;
 import ru.sqwk.ssn.dto.UpdatedCommunityDTO;
 import ru.sqwk.ssn.model.CommunityModel;
 import ru.sqwk.ssn.model.CommunityProfileModel;
-import ru.sqwk.ssn.model.FriendModel;
 import ru.sqwk.ssn.service.CommunityService;
 
 import java.util.List;
@@ -43,7 +41,7 @@ public class CommunityController {
 
 
     @GetMapping("/communities")
-    public List<CommunityModel> findAllFriends(
+    public List<CommunityModel> findAllCommunities(
             @RequestParam(name = "name", required = false, defaultValue = "") String name,
             @RequestParam(name = "topic", required = false, defaultValue = "All") String topic
     ) {

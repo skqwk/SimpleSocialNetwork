@@ -34,10 +34,13 @@
         </div>
     </div>
     <div id="communities">
-        <div th:each="community: ${communities}">
+        <div th:each="community: ${communities}" class="col">
+            <i class="fas fa-users fa-2x text-info"></i>
+            <br>
             <a th:href="@{/communities/{id}(id=${community.getId()})}" th:text="${community.getName()}"></a>
             <span th:text="${community.getTopic()}"  class="badge badge-pill badge-info"></span>
-            <p th:text="${community.getAmountMembers()}"></p>
+            <br>
+            <p th:text="|Участников: ${community.getAmountMembers()}|"></p>
             <hr>
         </div>
     </div>

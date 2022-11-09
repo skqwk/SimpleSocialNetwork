@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     } else {
       log.error("User with login = {} already exists!", userCredentials.getLogin());
       throw new IllegalStateException(
-          String.format("User with login = %s already exists!", userCredentials.getLogin()));
+          String.format("Пользователь с логином = %s уже существует!", userCredentials.getLogin()));
     }
   }
 }

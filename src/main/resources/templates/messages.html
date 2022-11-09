@@ -32,9 +32,10 @@
             <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>
             <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}"
                th:text="${message.getAuthor().getLogin()}"></a>
-            <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>
             <p th:text="${message.getContent()}"></p>
-            <p th:text="${message.getSentAt()}" class="font-weight-light text-muted"></p>
+            <p th:if="${!message.getHasBeenRead()}"><span class="badge badge-pill badge-info">Не прочитано</span></p>
+            <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>
+            <p class="font-weight-light text-muted"><small th:text="${message.getSentAt()}" ></small></p>
             <hr>
         </div>
     </div>

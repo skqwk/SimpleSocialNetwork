@@ -10,8 +10,11 @@
 <div class="container">
 
     <div th:with="isUser=${#authorization.expression('hasRole(''USER'')')}">
+        <div class="row justify-content-center mt-4">
+            <i class="fas fa-users fa-5x text-info"></i>
+        </div>
 
-        <img th:src="@{https://loremflickr.com/100/100}">
+
 
         <form th:if="${!isUser}" th:object="${community}" th:onsubmit="|return updateCommunity(${community.getId()});|">
             <!-- Name input -->
@@ -53,20 +56,21 @@
             <br>
             <h1 th:text="${community.getName()}"></h1>
             <h3 th:ifth:text="|Возрастные ограничения: ${community.getAgeLimit()}|"></h3>
-            <button id="join-button" th:disabled="${community.getBeIn() || !community.getIsSuitForAgeLimit()}"
+            <button id="join-button" class="btn btn-primary" th:disabled="${community.getBeIn() || !community.getIsSuitForAgeLimit()}"
                     onclick="join()">Вступить
             </button>
-            <button id="leave-button" th:disabled="${!community.getBeIn()}" onclick="leave()">Покинуть</button>
-            <h3 th:text="${community.getTopic}"></h3>
-            <h3 th:text="${community.getCreationDate()}"></h3>
+            <button id="leave-button" th:disabled="${!community.getBeIn()}" class="btn btn-primary" onclick="leave()">Покинуть</button>
+            <h3 th:text="|Тематика сообщества: ${community.getTopic}|"></h3>
+            <h3 th:text="|Дата создания: ${community.getCreationDate()}|"></h3>
 
         </div>
 
         <h3 th:text="|Всего участников: ${community.getMembers().size()}|"></h3>
         <div id="members">
             <div th:id="${member.getLogin()}" th:each="member : ${community.getMembers()}">
-                <p th:text="${member.getLogin()}"></p>
-                <p th:text="${member.getEntryDate()}"></p>
+
+                <a th:href="@{/users/{id}(id=${member.getId()})}" th:text="${member.getLogin()}"></a>
+                <p class="font-italic text-muted"><small th:text="${member.getEntryDate()}"></small></p>
             </div>
         </div>
 

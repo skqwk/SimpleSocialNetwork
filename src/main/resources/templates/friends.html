@@ -33,19 +33,20 @@
 
     <div id="friends">
         <div th:each="user: ${friends}" th:id="${user.getId()}">
+
             <input sec:authorize="hasRole('USER')" type="checkbox" checked
                    th:onchange="|deleteFriendship(${user.getId()}, this)|">
-            <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
+            <i class="fas fa-user fa-2x text-primary"></i>
             <p th:text="${user.getFullName()}"></p>
-            <select th:onchange="|updateFriendshipCategory(${user.getId()}, this)|">
+            <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
+            <br>
+            <select th:onchange="|updateFriendshipCategory(${user.getId()}, this)|" class="custom-select col-2">
                 <option th:each="i : ${ {'Classmates', 'Work', 'Common', 'Relatives'} }"
                         th:value="${i}"
                         th:text="${i}"
                         th:selected="${i == user.getCategory()}">
                 </option>
             </select>
-            <!--    @{/users/{id}(id=${post.getAuthor().getId()})}-->
-            <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
             <hr>
         </div>
     </div>
@@ -80,7 +81,7 @@
             let friendDiv = document.createElement('div');
             friendDiv.innerHTML = `
                     <input type="checkbox" checked onchange="deleteFriendship(${friend.id}, this)">
-                    <img alt="user-avatar" src="https://loremflickr.com/50/50">
+                    <i class="fas fa-user fa-2x text-primary"></i>
                     <p >${friend.fullName}</p>
                      <select  onchange="updateFriendshipCategory(${friend.id}, this)">
                      <option value="Classmates" ${"Classmates" === friend.category ? "selected" : ""}>Classmates</option>

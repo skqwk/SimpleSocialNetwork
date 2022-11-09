@@ -25,15 +25,15 @@
         <div th:each="post: ${posts}" th:id="${post.getId()}" class="post">
             <a th:href="@{/users/{id}(id=${post.getAuthor().getId()})}" th:text="${post.getAuthor().getLogin()}"></a>
             <a th:href="@{/posts/{id}(id=${post.getId()})}">Развернуть</a>
-            <a th:if="${post.getIsEditable() || #authorization.expression('hasRole(''ADMIN'')')}"
-               th:onclick="|deletePost(${post.getId()})|">Удалить</a>
+            <i th:if="${post.getIsEditable() || #authorization.expression('hasRole(''ADMIN'')')}"
+               class="fas fa-trash" th:onclick="|deletePost(${post.getId()})|" role='button'></i>
             <p th:text="${post.getContent()}"></p>
-            <p th:text="${post.getCreatedAt()}"></p>
-            <p name="amountLikes" th:text="|Понравилось: ${post.getAmountLikes()}|"></p>
-            <i class="far fa-heart"></i>
-            <i class="fas fa-heart"></i>
-            <input type="checkbox" th:if="${#authorization.expression('hasRole(''USER'')')}"
-                   th:checked="${post.getIsLiked()}" th:onchange="|updateLike(${post.getId()}, this)|"/>
+            <p class="font-italic text-muted"><small th:text="${post.getCreatedAt()}"></small></p>
+                <p name="amountLikes" th:text="|Понравилось: ${post.getAmountLikes()}|"></p>
+                <i th:if="${#authorization.expression('hasRole(''USER'')')}"
+                   th:class="'fa-heart align-self-end '+${post.getIsLiked() ? 'fas' : 'far'}"
+                   role="button"
+                   th:onclick="|updateLike(${post.getId()}, this)|"></i>
             <hr>
         </div>
     </div>
@@ -62,19 +62,34 @@
         postDiv.innerHTML = `
                             <a href="/users/${post.author.id}">${post.author.login}</a>
                             <a href="/posts/${post.id}">Развернуть</a>
-                            <a onclick="deletePost(${post.id})">Удалить</a>
+                            <i class="fas fa-trash" onclick="deletePost(${post.id})" role='button'></i>
                             <p>${post.content}</p>
-                            <p>${post.createdAt}</p>
+                            <p class="font-italic text-muted"><small>${post.createdAt}</small></p>
                             <p name="amountLikes">Понравилось: ${post.amountLikes}</p>
-                            <input type="checkbox" onchange="updateLike(${post.id}, this)"/>
+                            <i class="far fa-heart" role="button" onclick="${post.id}, this"></i>
                             <hr>
                         `
         document.getElementById("posts").prepend(postDiv)
     }
 
+    function check(element) {
+        return element.classList.contains('far')
+    }
+
+    function toggleLike(element) {
+        if (element.classList.contains('far')) {
+            element.classList.remove('far');
+            element.classList.add('fas');
+        } else {
+            element.classList.remove('fas');
+            element.classList.add('far');
+        }
+    }
+
     function updateLike(id, element) {
         console.log(id);
-        var isChecked = element.checked;
+        var isChecked = check(element);
+        toggleLike(element);
         console.log(isChecked);
         var amountLikes = document.getElementById(id).children.namedItem("amountLikes");
         var text = amountLikes.innerText;
@@ -87,6 +102,7 @@
             method: isChecked ? "POST" : "DELETE"
         })
             .catch(ex => console.log(ex));
+        element.c
 
     }
 

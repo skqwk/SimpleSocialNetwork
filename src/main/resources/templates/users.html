@@ -25,11 +25,10 @@
 
     <div id="users">
         <div th:each="user: ${users}">
-            <p th:if="${user.getIsFriend()}">В друзьях:</p>
-            <input sec:authorize="hasRole('USER')" type="checkbox" th:checked="${user.getIsFriend()}"
-                   th:onchange="|updateFriendship(${user.getId()}, this)|">
-            <img alt="user-avatar" th:src="@{https://loremflickr.com/50/50}">
+            <p name="badge" th:if="${user.getIsFriend()}"><span class="badge badge-pill badge-info" name="pill">В друзьях</span></p>
+            <i class="fas fa-user fa-2x text-primary"></i>
             <p th:text="${user.getFullName()}"></p>
+            <i sec:authorize="hasRole('USER')" th:class="'fas ' + ${user.getIsFriend() ? 'fa-minus' : 'fa-plus'}" role="button" th:onclick="|updateFriendship(${user.getId()}, this)|"></i>
             <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
             <hr>
         </div>
@@ -77,7 +76,7 @@
 
             userDiv.innerHTML = `
                     ${detail}
-                    <img alt="user-avatar" src="https://loremflickr.com/50/50">
+                    <i class="fas fa-user fa-2x text-primary"></i>
                     <p >${user.fullName}</p>
                     <a href="{/users/${user.id}" >${user.login}</a>
                     <hr>
@@ -90,8 +89,39 @@
         return document.getElementById("isAdmin").getAttribute("value");
     }
 
+    function isCheck(checkbox) {
+        return !checkbox.classList.contains('fa-minus');
+    }
+
+    function toggleCheck(element) {
+        if (element.classList.contains('fa-minus')) {
+            element.classList.remove('fa-minus');
+            element.classList.add('fa-plus');
+        } else {
+            element.classList.remove('fa-plus');
+            element.classList.add('fa-minus');
+        }
+    }
+
+    function toggleBadge(parent, checked) {
+        if (checked) {
+            let badge = document.createElement('p');
+            badge.setAttribute("name", "badge")
+            badge.innerHTML = `
+                <span class="badge badge-pill badge-info" name="badge">В друзьях</span>
+            `;
+            parent.prepend(badge);
+
+        } else {
+            let badge = parent.children.namedItem("badge");
+            badge.remove();
+        }
+    }
+
     function updateFriendship(friendId, checkbox) {
-        let checked = checkbox.checked;
+        let checked = isCheck(checkbox);
+        toggleCheck(checkbox);
+        toggleBadge(checkbox.parentElement, checked)
         let method = checked ? "POST" : "DELETE";
         friendshipRequest(method, friendId);
     }
