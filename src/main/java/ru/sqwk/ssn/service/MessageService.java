@@ -20,4 +20,6 @@ public interface MessageService {
     void deleteMessage(Long messageId);
 
     void updateMessage(Long messageId, UpdatedMessageDTO messageDTO);
+
+    void markMessageAsRead(Long messageId);
 }

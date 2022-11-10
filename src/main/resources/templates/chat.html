@@ -90,8 +90,22 @@
         const data = JSON.parse(msg.body);
         console.log(data);
         if (data.senderLogin === senderLogin || data.senderLogin === recipientLogin) {
+            if (data.senderLogin === recipientLogin) {
+                setMessageRead(data.id);
+            }
             appendReceivedMessage(data);
         }
+    }
+
+    function setMessageRead(messageId) {
+        var headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        let url = `/api/v1/messages/${messageId}`;
+        fetch(url, {
+            method: "PATCH",
+            headers: headers
+        })
+        .catch(ex => console.log(ex));
     }
 
     function appendSentMessage(message) {
@@ -147,13 +161,6 @@
                 </div>
         `
 
-
-        // messageDiv.innerHTML = `
-        //         <a href="/users/${message.senderId}">${name}</a>
-        //         <p>${message.content}</p>
-        //         <p>${message.sentAt}</p>
-        //         <hr>
-        //         `;
         messagesDiv.prepend(messageDiv);
 
     }

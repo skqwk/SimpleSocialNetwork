@@ -10,8 +10,8 @@
 <div th:insert="~{base :: site_navbar}"></div>
 
 <div class="container">
-    <div class="mb-4 mt-4" >
-        <div class="row align-items-center" >
+    <div class="mb-4 mt-4">
+        <div class="row align-items-center">
             <div class="col-sm-6">
                 <input id="query" type="text" class="form-control" placeholder="Введите запрос">
             </div>
@@ -25,10 +25,12 @@
 
     <div id="users">
         <div th:each="user: ${users}">
-            <p name="badge" th:if="${user.getIsFriend()}"><span class="badge badge-pill badge-info" name="pill">В друзьях</span></p>
+            <p name="badge" th:if="${user.getIsFriend()}"><span class="badge badge-pill badge-info" name="pill">В друзьях</span>
+            </p>
             <i class="fas fa-user fa-2x text-primary"></i>
             <p th:text="${user.getFullName()}"></p>
-            <i sec:authorize="hasRole('USER')" th:class="'fas ' + ${user.getIsFriend() ? 'fa-minus' : 'fa-plus'}" role="button" th:onclick="|updateFriendship(${user.getId()}, this)|"></i>
+            <i sec:authorize="hasRole('USER')" th:class="'fas ' + ${user.getIsFriend() ? 'fa-minus' : 'fa-plus'}"
+               role="button" th:onclick="|updateFriendship(${user.getId()}, this)|"></i>
             <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
             <hr>
         </div>
@@ -62,22 +64,33 @@
         appendUsers(users);
     }
 
+    function getDetail(isAdmin, isFriend) {
+        console.log(isFriend, !isAdmin);
+        if (isFriend && !isAdmin) {
+            return '<p name="badge" ><span class="badge badge-pill badge-info" name="pill">В друзьях</span></p>';
+        }
+        return '';
+    }
+
     function appendUsers(users) {
         let usersDiv = document.getElementById("users");
         usersDiv.innerHTML = '';
 
         users.forEach(user => {
             let userDiv = document.createElement('div');
-            let checkedFriend = user.isFriend ? 'checked' : '';
-            let detail = isAdmin() ? '' : `
-                    ${user.isFriend ? '<p>В друзьях</p>' : ''}
-                    <input type="checkbox" ${checkedFriend} onchange="updateFriendship(${user.id},this)">
-                    `;
+            console.log(user.isFriend);
+            console.log(isAdmin());
+            let detail = getDetail(isAdmin(), user.isFriend);
+            console.log(detail);
+            let detailAddRemove = isAdmin() ? '' : `
+            <i class="fas ${user.isFriend ? 'fa-minus' : 'fa-plus'}" role="button" onclick="updateFriendship(${user.id},this)"></i>
+            `;
 
             userDiv.innerHTML = `
                     ${detail}
                     <i class="fas fa-user fa-2x text-primary"></i>
                     <p >${user.fullName}</p>
+                    ${detailAddRemove}
                     <a href="{/users/${user.id}" >${user.login}</a>
                     <hr>
                 `
@@ -86,7 +99,7 @@
     }
 
     function isAdmin() {
-        return document.getElementById("isAdmin").getAttribute("value");
+        return document.getElementById("isAdmin").getAttribute("value") === 'true';
     }
 
     function isCheck(checkbox) {

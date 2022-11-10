@@ -9,11 +9,9 @@
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
 <div class="container">
-    <div class="mb-4 mt-4" >
+    <div class="mb-4 mt-4">
 
-        <div class="row align-items-center" >
-            <!--        <label class="form-label" for="login">Логин</label>-->
-            <!--        <input th:field="*{login}" type="text" id="login" class="form-control" disabled required/>-->
+        <div class="row align-items-center">
             <div class="col-sm-6">
                 <input id="query" type="text" class="form-control" placeholder="Введите запрос">
 
@@ -38,7 +36,7 @@
             <i class="fas fa-users fa-2x text-info"></i>
             <br>
             <a th:href="@{/communities/{id}(id=${community.getId()})}" th:text="${community.getName()}"></a>
-            <span th:text="${community.getTopic()}"  class="badge badge-pill badge-info"></span>
+            <span th:text="${community.getTopic()}" class="badge badge-pill badge-info"></span>
             <br>
             <p th:text="|Участников: ${community.getAmountMembers()}|"></p>
             <hr>
@@ -74,12 +72,13 @@
         communities.forEach(community => {
             let communityDiv = document.createElement('div');
             communityDiv.innerHTML = `
-                    <div>
-                        <a href="/communities/${community.id}">${community.name}</a>
-                        <span class="badge badge-pill badge-info">${community.topic}</span>
-                        <p>${community.amountMembers}</p>
-                        <hr>
-                    </div>
+            <i class="fas fa-users fa-2x text-info"></i>
+            <br>
+            <a href="/communities/${community.id}" >${community.name}</a>
+            <span class="badge badge-pill badge-info">${community.topic}</span>
+            <br>
+            <p>Участников: ${community.amountMembers}</p>
+            <hr>
                 `
             communitiesDiv.append(communityDiv);
         })

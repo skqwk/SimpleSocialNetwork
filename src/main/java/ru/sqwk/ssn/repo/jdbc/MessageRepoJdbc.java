@@ -112,6 +112,12 @@ public class MessageRepoJdbc implements MessageRepo {
         jdbc.update(query, messageContent, messageId);
     }
 
+    @Override
+    public void markMessageAsRead(Long messageId) {
+        String query = "UPDATE message SET has_been_read = 1 WHERE message_id = ?;";
+        jdbc.update(query, messageId);
+    }
+
     private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
     return MessageModel.builder()
         .id(rs.getLong("message_id"))

@@ -32,7 +32,16 @@ public class MessageServiceImpl implements MessageService {
 
   @Override
   public List<MessageModel> getChat(Long userId, Long friendId) {
-    return messageRepo.getMessages(userId, friendId);
+
+    List<MessageModel> messages = messageRepo.getMessages(userId, friendId);
+    messages.stream()
+        .filter(m -> !m.getOwn())
+        .forEach(
+            m -> {
+              markMessageAsRead(m.getId());
+              m.setHasBeenRead(true);
+            });
+    return messages;
   }
 
   @Override
@@ -77,7 +86,14 @@ public class MessageServiceImpl implements MessageService {
     messageRepo.update(messageId, messageDTO.getMessageContent());
   }
 
+  @Override
+  public void markMessageAsRead(Long messageId) {
+    messageRepo.markMessageAsRead(messageId);
+  }
+
   private Message getMessage(Long messageId) {
-    return messageRepo.getMessage(messageId).orElseThrow(() -> new RuntimeException("Not found message"));
+    return messageRepo
+        .getMessage(messageId)
+        .orElseThrow(() -> new RuntimeException("Not found message"));
   }
 }

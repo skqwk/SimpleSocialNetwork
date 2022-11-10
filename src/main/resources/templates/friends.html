@@ -33,11 +33,9 @@
 
     <div id="friends">
         <div th:each="user: ${friends}" th:id="${user.getId()}">
-
-            <input sec:authorize="hasRole('USER')" type="checkbox" checked
-                   th:onchange="|deleteFriendship(${user.getId()}, this)|">
             <i class="fas fa-user fa-2x text-primary"></i>
             <p th:text="${user.getFullName()}"></p>
+            <i class="fas fa-minus" role="button" th:onclick="|deleteFriendship(${user.getId()})|"></i>
             <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
             <br>
             <select th:onchange="|updateFriendshipCategory(${user.getId()}, this)|" class="custom-select col-2">
@@ -80,17 +78,18 @@
         friends.forEach(friend => {
             let friendDiv = document.createElement('div');
             friendDiv.innerHTML = `
-                    <input type="checkbox" checked onchange="deleteFriendship(${friend.id}, this)">
                     <i class="fas fa-user fa-2x text-primary"></i>
                     <p >${friend.fullName}</p>
-                     <select  onchange="updateFriendshipCategory(${friend.id}, this)">
+                    <i class="fas fa-minus" role="button" onclick="deleteFriendship(${friend.id})"></i>
+                    <a href="{/users/${friend.id}" >${friend.login}</a>
+                    <br>
+                     <select  onchange="updateFriendshipCategory(${friend.id}, this)" class="custom-select col-2">
                      <option value="Classmates" ${"Classmates" === friend.category ? "selected" : ""}>Classmates</option>
                      <option value="Work" ${"Work" === friend.category ? "selected" : ""}>Work</option>
                      <option value="Common" ${"Common" === friend.category ? "selected" : ""}>Common</option>
                      <option value="Relatives" ${"Relatives" === friend.category ? "selected" : ""}>Relatives</option>
                      </option>
                      </select>
-                    <a href="{/users/${friend.id}" >${friend.login}</a>
                     <hr>
                 `
             friendsDiv.append(friendDiv);
@@ -118,7 +117,7 @@
     }
 
 
-    function deleteFriendship(friendId, checkbox) {
+    function deleteFriendship(friendId) {
         friendshipRequest("DELETE", friendId);
         document.getElementById(friendId).remove();
     }

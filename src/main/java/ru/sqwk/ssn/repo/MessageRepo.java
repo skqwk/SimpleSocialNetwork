@@ -18,4 +18,6 @@ public interface MessageRepo {
     void delete(Long messageId);
 
     void update(Long messageId, String messageContent);
+
+    void markMessageAsRead(Long messageId);
 }
