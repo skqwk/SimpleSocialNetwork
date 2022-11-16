@@ -39,7 +39,7 @@
 
                         <p th:text="${message.getContent()}" th:id="|content-${message.getId()}|" class="me-1"></p>
                         <div class="align-self-end justify-content-evenly ms-1">
-                            <i class="fas fa-pen" th:if="${message.getOwn()}"
+                            <i class="fas fa-pen" th:if="${message.getOwn() && message.getCanEdit()}"
                                th:onclick="|updateMessage(${message.getId}, this)|" role='button'></i>
                             <i class="fas fa-trash" th:onclick="|deleteMessage(${message.getId})|" role='button'></i>
                         </div>
@@ -157,7 +157,7 @@
                             ${controlDiv.innerHTML}
                         </div>
                     </div>
-                    <p th:class="font-italic text-muted ${isNowUser ? 'text-right' :'text-left'}"><small>${message.sentAt}</small></p>
+                    <p class="font-italic text-muted ${isNowUser ? 'text-right' :'text-left'}"><small>${message.sentAt}</small></p>
                 </div>
         `
 
@@ -205,7 +205,8 @@
             contentElement.innerText = inputContent.value;
             inputContent.parentNode.replaceChild(contentElement, inputContent);
             contentElement.setAttribute("name", "content");
-
+            contentElement.setAttribute("name", "content");
+            contentElement.setAttribute("id", `content-${messageId}`)
             updateMessageRequest(messageId, updatedContent);
 
             button.setAttribute('class', 'fas fa-pen');

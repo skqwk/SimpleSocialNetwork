@@ -15,7 +15,7 @@
             <form th:action="|javascript:updatePost(${post.getId()})|">
                 <textarea class="form-control" th:readonly="${!post.getIsEditable()}" th:text="${post.getContent()}"
                           maxlength="200"
-                          id="post-content" name="post-content"></textarea>
+                          id="post-content" name="post-content"/>
                 <input th:if="${post.getIsEditable()}" class="btn btn-primary mt-2" type="submit" value="Изменить пост"/>
             </form>
             <br><br>

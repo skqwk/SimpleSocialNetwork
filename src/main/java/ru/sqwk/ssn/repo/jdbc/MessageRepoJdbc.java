@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.sqwk.ssn.domain.Message;
+import ru.sqwk.ssn.model.MessageChatModel;
 import ru.sqwk.ssn.model.MessageModel;
 import ru.sqwk.ssn.repo.MessageRepo;
 import ru.sqwk.ssn.repo.UserRepo;
@@ -24,9 +25,10 @@ public class MessageRepoJdbc implements MessageRepo {
   private final UserRepo userRepo;
 
   @Override
-  public List<MessageModel> getChats(Long userId) {
+  public List<MessageChatModel> getChats(Long userId) {
     String query =
-        "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, CASE WHEN sender = ? THEN 1 ELSE 0 END as own FROM ("
+            "SELECT login as friend_login, message_id, recipient, sender, content, has_been_read, time, own, friend FROM ("
+        + "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, CASE WHEN sender = ? THEN 1 ELSE 0 END as own FROM ("
             + "SELECT max(M.timestamp) as time, F.friend FROM "
             + "(SELECT DISTINCT user2 as friend FROM friendship WHERE user1 = ? "
             + "UNION "
@@ -35,17 +37,18 @@ public class MessageRepoJdbc implements MessageRepo {
             + "(SELECT * FROM message WHERE sender = ? OR recipient = ?) M "
             + "ON F.friend = M.sender or M.recipient = F.friend group by F.friend) T, "
             + "    message MS "
-            + "WHERE T.time = MS.timestamp AND (T.friend = MS.sender OR T.friend = MS.recipient);";
+            + "WHERE T.time = MS.timestamp AND (T.friend = MS.sender OR T.friend = MS.recipient)) CH, user where CH.friend = user.user_id;";
 
     return jdbc.query(
-        query, this::mapResultSetToMessageModel, userId, userId, userId, userId, userId);
+        query, this::mapResultSetToMessageChatModel, userId, userId, userId, userId, userId);
   }
 
   @Override
   public List<MessageModel> getMessages(Long userId, Long friendId) {
     String query =
         "SELECT ? as friend, M.recipient, M.sender, M.content, M.has_been_read, M.timestamp as time, M.message_id, "
-            + "CASE WHEN sender = ? THEN 1 ELSE 0 END as own "
+            + "CASE WHEN sender = ? THEN 1 ELSE 0 END as own, "
+            + "CASE WHEN ((DATE_ADD(NOW(), interval 3 hour) - M.timestamp) < 300) THEN 1 ELSE 0 END as can_edit "
             + "FROM message M "
             + "    WHERE (M.recipient = ? AND M.sender = ?) OR (M.recipient = ? and M.sender = ?) "
             + "ORDER BY timestamp DESC;";
@@ -101,6 +104,7 @@ public class MessageRepoJdbc implements MessageRepo {
     return keyHolder.getKey().longValue();
   }
 
+<<<<<<< HEAD
   @Override
   public void delete(Long messageId) {
     String query = "DELETE FROM message WHERE message_id = ?;";
@@ -120,6 +124,39 @@ public class MessageRepoJdbc implements MessageRepo {
   }
 
   private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
+=======
+    @Override
+    public void delete(Long messageId) {
+        String query = "DELETE FROM message WHERE message_id = ?;";
+        jdbc.update(query, messageId);
+    }
+
+    @Override
+    public void update(Long messageId, String messageContent) {
+        String query = "UPDATE message SET content = ? WHERE message_id = ?";
+        jdbc.update(query, messageContent, messageId);
+    }
+
+    @Override
+    public void markMessageAsRead(Long messageId) {
+        String query = "UPDATE message SET has_been_read = 1 WHERE message_id = ?;";
+        jdbc.update(query, messageId);
+    }
+
+    private MessageChatModel mapResultSetToMessageChatModel(ResultSet rs, int rowNum) throws SQLException {
+    return MessageChatModel.builder()
+        .id(rs.getLong("message_id"))
+        .content(rs.getString("content"))
+        .hasBeenRead(rs.getBoolean("has_been_read"))
+        .own(rs.getBoolean("own"))
+        .author(userRepo.getAuthor(rs.getLong("sender")))
+        .sentAt(rs.getString("time"))
+        .friendId(rs.getLong("friend"))
+        .friendLogin(rs.getString("friend_login"))
+        .build();
+  }
+    private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
+>>>>>>> 283451c58d4d4de5e1f49b034df582e4152981f7
     return MessageModel.builder()
         .id(rs.getLong("message_id"))
         .content(rs.getString("content"))
@@ -128,6 +165,7 @@ public class MessageRepoJdbc implements MessageRepo {
         .author(userRepo.getAuthor(rs.getLong("sender")))
         .sentAt(rs.getString("time"))
         .friendId(rs.getLong("friend"))
+        .canEdit(rs.getBoolean("can_edit"))
         .build();
   }
 }
