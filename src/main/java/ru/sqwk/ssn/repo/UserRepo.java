@@ -13,23 +13,23 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserRepo {
-    List<UserModel> getUsers();
+  List<UserModel> getUsers();
 
-    Optional<UserProfileModel> getUser(Long id);
+  Optional<UserProfileModel> getUser(Long id);
 
-    Optional<UserAccount> findByLogin(String username);
+  Optional<UserAccount> findByLogin(String username);
 
-    void saveRegisteredUser(User user);
+  void saveRegisteredUser(User user);
 
-    AuthorModel getAuthor(long authorId);
+  AuthorModel getAuthor(long authorId);
 
-    List<UserModel> getUsersByName(String name);
+  List<UserModel> getUsersByName(String name);
 
-    void update(Long id, UpdatedUserDTO updatedUserDTO);
+  void update(Long id, UpdatedUserDTO updatedUserDTO);
 
-    List<FriendModel> getFriends();
+  List<FriendModel> getFriends();
 
-    List<FriendChatModel> getFriendChats();
+  List<FriendChatModel> getFriendChats();
 
-    List<FriendModel> getFriendsByName(String name);
+  List<FriendModel> getFriendsByName(String name);
 }

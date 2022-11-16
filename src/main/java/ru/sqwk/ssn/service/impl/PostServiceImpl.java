@@ -10,7 +10,6 @@ import ru.sqwk.ssn.repo.PostRepo;
 import ru.sqwk.ssn.service.PostService;
 import ru.sqwk.ssn.util.Formatter;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -55,11 +54,7 @@ public class PostServiceImpl implements PostService {
 
   @Override
   public PostModel updatePost(Long authorId, String postContent, Long postId) {
-    Post post =
-            Post.builder()
-                    .id(postId)
-                    .content(postContent)
-                    .build();
+    Post post = Post.builder().id(postId).content(postContent).build();
     postRepo.update(post);
     log.info("Create post with id = {}", postId);
     return getPost(authorId, postId);

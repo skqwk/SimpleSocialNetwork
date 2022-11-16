@@ -15,29 +15,30 @@ import java.util.Date;
 @AllArgsConstructor
 public class FriendshipServiceImpl implements FriendshipService {
 
-    private final FriendshipRepo friendshipRepo;
+  private final FriendshipRepo friendshipRepo;
 
-    @Override
-    public void removeFriendship(Long userId, Long friendId) {
-        log.info("Delete friendship between ({}, {})", userId, friendId);
-        friendshipRepo.delete(userId, friendId);
-    }
+  @Override
+  public void removeFriendship(Long userId, Long friendId) {
+    log.info("Delete friendship between ({}, {})", userId, friendId);
+    friendshipRepo.delete(userId, friendId);
+  }
 
-    @Override
-    public void addFriendship(Long userId, Long friendId) {
-        log.info("Create friendship between ({}, {})", userId, friendId);
-        Friendship friendship = Friendship.builder()
-                .timestamp(Formatter.format(new Date()))
-                .category("Common")
-                .user1(userId)
-                .user2(friendId)
-                .build();
-        friendshipRepo.save(friendship);
-    }
+  @Override
+  public void addFriendship(Long userId, Long friendId) {
+    log.info("Create friendship between ({}, {})", userId, friendId);
+    Friendship friendship =
+        Friendship.builder()
+            .timestamp(Formatter.format(new Date()))
+            .category("Common")
+            .user1(userId)
+            .user2(friendId)
+            .build();
+    friendshipRepo.save(friendship);
+  }
 
-    @Override
-    public void updateFriendshipCategory(Long userId, Long friendId, String category) {
-        log.info("Update friendship({}, {}), category = {}", userId, friendId, category);
-        friendshipRepo.update(userId, friendId, category);
-    }
+  @Override
+  public void updateFriendshipCategory(Long userId, Long friendId, String category) {
+    log.info("Update friendship({}, {}), category = {}", userId, friendId, category);
+    friendshipRepo.update(userId, friendId, category);
+  }
 }

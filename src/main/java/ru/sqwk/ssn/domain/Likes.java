@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Likes {
-    private Long userId;
-    private Long postId;
-    private String timestamp;
+  private Long userId;
+  private Long postId;
+  private String timestamp;
 }

@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class FriendModel {
-    private String fullName;
-    private String login;
-    private Long id;
-    private String category;
+  private String fullName;
+  private String login;
+  private Long id;
+  private String category;
 }

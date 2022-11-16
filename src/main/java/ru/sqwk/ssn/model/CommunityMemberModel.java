@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CommunityMemberModel {
-    private String login;
-    private Long id;
-    private String entryDate;
+  private String login;
+  private Long id;
+  private String entryDate;
 }

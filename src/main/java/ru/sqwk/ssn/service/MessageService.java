@@ -1,7 +1,5 @@
 package ru.sqwk.ssn.service;
 
-
-import ru.sqwk.ssn.domain.Message;
 import ru.sqwk.ssn.dto.MessageDTO;
 import ru.sqwk.ssn.dto.UpdatedMessageDTO;
 import ru.sqwk.ssn.model.MessageModel;
@@ -11,15 +9,15 @@ import java.util.List;
 
 public interface MessageService {
 
-    List<MessageModel> getChats(Long userId);
+  List<MessageModel> getChats(Long userId);
 
-    List<MessageModel> getChat(Long id, Long friendId);
+  List<MessageModel> getChat(Long id, Long friendId);
 
-    ProcessedMessageModel saveMessage(MessageDTO messageDTO);
+  ProcessedMessageModel saveMessage(MessageDTO messageDTO);
 
-    void deleteMessage(Long messageId);
+  void deleteMessage(Long messageId);
 
-    void updateMessage(Long messageId, UpdatedMessageDTO messageDTO);
+  void updateMessage(Long messageId, UpdatedMessageDTO messageDTO);
 
-    void markMessageAsRead(Long messageId);
+  void markMessageAsRead(Long messageId);
 }

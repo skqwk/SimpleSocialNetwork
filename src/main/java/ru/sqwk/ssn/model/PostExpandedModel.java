@@ -10,11 +10,11 @@ import java.util.List;
 @Setter
 @Builder
 public class PostExpandedModel {
-    private Long id;
-    private AuthorModel author;
-    private String content;
-    private String createdAt;
-    private int amountLikes;
-    private List<CommentModel> comments;
-    private Boolean isEditable;
+  private Long id;
+  private AuthorModel author;
+  private String content;
+  private String createdAt;
+  private int amountLikes;
+  private List<CommentModel> comments;
+  private Boolean isEditable;
 }

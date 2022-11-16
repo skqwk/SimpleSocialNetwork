@@ -8,9 +8,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Comment {
-    private Long id;
-    private String content;
-    private Long postId;
-    private Long authorId;
-    private String createdAt;
+  private Long id;
+  private String content;
+  private Long postId;
+  private Long authorId;
+  private String createdAt;
 }

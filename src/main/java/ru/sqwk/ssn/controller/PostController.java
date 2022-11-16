@@ -19,27 +19,35 @@ import ru.sqwk.ssn.service.PostService;
 @AllArgsConstructor
 public class PostController {
 
-    private final PostService postService;
+  private final PostService postService;
 
-    @PostMapping(value = "/post")
-    public PostModel addPost(@AuthenticationPrincipal UserAccount userAccount, @RequestBody PostDTO postDTO) {
-        log.info("User with id = {} want to add post with content = {}", userAccount.getId(), postDTO.getPostContent());
-        PostModel postModel = postService.addPost(userAccount.getId(), postDTO.getPostContent());
-        log.info("Add new post with content = {}", postModel.getContent());
+  @PostMapping(value = "/post")
+  public PostModel addPost(
+      @AuthenticationPrincipal UserAccount userAccount, @RequestBody PostDTO postDTO) {
+    log.info(
+        "User with id = {} want to add post with content = {}",
+        userAccount.getId(),
+        postDTO.getPostContent());
+    PostModel postModel = postService.addPost(userAccount.getId(), postDTO.getPostContent());
+    log.info("Add new post with content = {}", postModel.getContent());
 
-        return postModel;
-    }
-    @PutMapping(value = "/posts/{postId}")
-    public PostModel addPost(@AuthenticationPrincipal UserAccount userAccount, @RequestBody PostDTO postDTO, @PathVariable Long postId) {
-        PostModel postModel = postService.updatePost(userAccount.getId(), postDTO.getPostContent(), postId);
-        log.info("Add new post with content = {}", postModel.getContent());
+    return postModel;
+  }
 
-        return postModel;
-    }
+  @PutMapping(value = "/posts/{postId}")
+  public PostModel addPost(
+      @AuthenticationPrincipal UserAccount userAccount,
+      @RequestBody PostDTO postDTO,
+      @PathVariable Long postId) {
+    PostModel postModel =
+        postService.updatePost(userAccount.getId(), postDTO.getPostContent(), postId);
+    log.info("Add new post with content = {}", postModel.getContent());
 
-    @DeleteMapping("/posts/{postId}")
-    public void deletePost(@PathVariable(name = "postId") Long postId) {
-        postService.deletePost(postId);
-    }
+    return postModel;
+  }
 
+  @DeleteMapping("/posts/{postId}")
+  public void deletePost(@PathVariable(name = "postId") Long postId) {
+    postService.deletePost(postId);
+  }
 }

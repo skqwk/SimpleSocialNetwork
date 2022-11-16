@@ -4,16 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import ru.sqwk.ssn.domain.Post;
-import ru.sqwk.ssn.model.AuthorModel;
 import ru.sqwk.ssn.model.CommentModel;
 import ru.sqwk.ssn.model.PostExpandedModel;
 import ru.sqwk.ssn.model.PostModel;
 import ru.sqwk.ssn.repo.PostRepo;
 import ru.sqwk.ssn.repo.UserRepo;
-import ru.sqwk.ssn.security.UserAccount;
 import ru.sqwk.ssn.util.SecurityContextWrapper;
 
 import java.sql.PreparedStatement;
@@ -31,28 +28,28 @@ public class PostRepoJdbc implements PostRepo {
   @Override
   public List<PostModel> getPosts(Long userId) {
     String query =
-        "SELECT post_id, " +
-                "post_author, " +
-                "content, " +
-                "timestamp, " +
-                "count_post_likes(post_id) as likes, " +
-                "check_is_liked(?, post_id) as is_liked, " +
-                "case when post_author = ? then 1 else 0 end as is_editable " +
-                "FROM post ORDER BY timestamp DESC;";
+        "SELECT post_id, "
+            + "post_author, "
+            + "content, "
+            + "timestamp, "
+            + "count_post_likes(post_id) as likes, "
+            + "check_is_liked(?, post_id) as is_liked, "
+            + "case when post_author = ? then 1 else 0 end as is_editable "
+            + "FROM post ORDER BY timestamp DESC;";
     return jdbc.query(query, this::mapResultSetToPostModel, userId, userId);
   }
 
   @Override
   public PostModel getPost(Long userId, Long postId) {
     String query =
-        "SELECT post_id, " +
-                "post_author, " +
-                "content, " +
-                "timestamp, " +
-                "count_post_likes(post_id) as likes, " +
-                "check_is_liked(?, ?) as is_liked, " +
-                "1 as is_editable " +
-                "FROM post WHERE post_id = ?;";
+        "SELECT post_id, "
+            + "post_author, "
+            + "content, "
+            + "timestamp, "
+            + "count_post_likes(post_id) as likes, "
+            + "check_is_liked(?, ?) as is_liked, "
+            + "1 as is_editable "
+            + "FROM post WHERE post_id = ?;";
     return jdbc.queryForObject(query, this::mapResultSetToPostModel, userId, postId, postId);
   }
 
@@ -77,14 +74,14 @@ public class PostRepoJdbc implements PostRepo {
   @Override
   public PostExpandedModel getExpandedPost(Long authorId, Long postId) {
     String query =
-        "SELECT post_id, " +
-                "post_author, " +
-                "content, " +
-                "timestamp, " +
-                "count_post_likes(post_id) as likes, " +
-                "check_is_liked(?, ?) as is_liked, " +
-                "case when post_author = ? then 1 else 0 end as is_editable " +
-                "FROM post WHERE post_id = ?;";
+        "SELECT post_id, "
+            + "post_author, "
+            + "content, "
+            + "timestamp, "
+            + "count_post_likes(post_id) as likes, "
+            + "check_is_liked(?, ?) as is_liked, "
+            + "case when post_author = ? then 1 else 0 end as is_editable "
+            + "FROM post WHERE post_id = ?;";
     return jdbc.queryForObject(
         query, this::mapResultSetToPostExpandedModel, authorId, postId, authorId, postId);
   }
@@ -100,8 +97,6 @@ public class PostRepoJdbc implements PostRepo {
     String query = "UPDATE post SET content = ? WHERE post_id = ?;";
     jdbc.update(query, post.getContent(), post.getId());
   }
-
-
 
   PostModel mapResultSetToPostModel(ResultSet rs, Integer rowNum) throws SQLException {
     return PostModel.builder()
@@ -130,13 +125,13 @@ public class PostRepoJdbc implements PostRepo {
 
   private List<CommentModel> getComments(Long userId, Long postId) {
     String query =
-        "SELECT post_id, " +
-                "comment_author, " +
-                "content, " +
-                "timestamp, " +
-                "comment_id, " +
-                "case when comment_author = ? then 1 else 0 end as is_editable " +
-                "FROM comment WHERE post_id = ? ORDER BY timestamp DESC;";
+        "SELECT post_id, "
+            + "comment_author, "
+            + "content, "
+            + "timestamp, "
+            + "comment_id, "
+            + "case when comment_author = ? then 1 else 0 end as is_editable "
+            + "FROM comment WHERE post_id = ? ORDER BY timestamp DESC;";
     return jdbc.query(query, this::mapResultSetToCommentModel, userId, postId);
   }
 

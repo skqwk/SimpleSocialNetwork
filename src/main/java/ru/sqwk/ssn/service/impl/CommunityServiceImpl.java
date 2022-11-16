@@ -69,11 +69,12 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   public void updateCommunity(Long communityId, UpdatedCommunityDTO updatedCommunityDTO) {
-    communityRepo.update(Community.builder()
-                    .id(communityId)
-                    .name(updatedCommunityDTO.getName())
-                    .ageLimit(updatedCommunityDTO.getAgeLimit())
-                    .topic(updatedCommunityDTO.getTopic())
+    communityRepo.update(
+        Community.builder()
+            .id(communityId)
+            .name(updatedCommunityDTO.getName())
+            .ageLimit(updatedCommunityDTO.getAgeLimit())
+            .topic(updatedCommunityDTO.getTopic())
             .build());
   }
 

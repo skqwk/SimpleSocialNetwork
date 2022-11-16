@@ -8,9 +8,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Community {
-    private Long id;
-    private String name;
-    private String creationDate;
-    private String topic;
-    private Integer ageLimit;
+  private Long id;
+  private String name;
+  private String creationDate;
+  private String topic;
+  private Integer ageLimit;
 }

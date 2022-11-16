@@ -10,28 +10,31 @@ import ru.sqwk.ssn.repo.FriendshipRepo;
 @AllArgsConstructor
 public class FriendshipRepoJdbc implements FriendshipRepo {
 
-    private final JdbcTemplate jdbc;
+  private final JdbcTemplate jdbc;
 
-    @Override
-    public void delete(Long userId, Long friendId) {
-        String query = "DELETE FROM friendship WHERE user1 = ? AND user2 = ?;";
-        jdbc.update(query, userId, friendId);
-        jdbc.update(query, friendId, userId);
-    }
+  @Override
+  public void delete(Long userId, Long friendId) {
+    String query = "DELETE FROM friendship WHERE user1 = ? AND user2 = ?;";
+    jdbc.update(query, userId, friendId);
+    jdbc.update(query, friendId, userId);
+  }
 
-    @Override
-    public void save(Friendship friendship) {
-        String query = "INSERT INTO friendship(user1, user2, timestamp, category) VALUES(?, ?, ?, ?);";
+  @Override
+  public void save(Friendship friendship) {
+    String query = "INSERT INTO friendship(user1, user2, timestamp, category) VALUES(?, ?, ?, ?);";
 
-        jdbc.update(query, friendship.getUser1(), friendship.getUser2(), friendship.getTimestamp(), friendship.getCategory());
+    jdbc.update(
+        query,
+        friendship.getUser1(),
+        friendship.getUser2(),
+        friendship.getTimestamp(),
+        friendship.getCategory());
+  }
 
-
-    }
-
-    @Override
-    public void update(Long userId, Long friendId, String category) {
-        String query = "UPDATE friendship SET category = ? WHERE user2 = ? AND user1 = ?";
-        jdbc.update(query, category, userId, friendId);
-        jdbc.update(query, category, friendId, userId);
-    }
+  @Override
+  public void update(Long userId, Long friendId, String category) {
+    String query = "UPDATE friendship SET category = ? WHERE user2 = ? AND user1 = ?";
+    jdbc.update(query, category, userId, friendId);
+    jdbc.update(query, category, friendId, userId);
+  }
 }

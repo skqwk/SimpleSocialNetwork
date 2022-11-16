@@ -62,7 +62,13 @@ public class UserRepoJdbc implements UserRepo {
             + "    on U.user_id = FS.user;";
 
     return jdbc.query(
-            query, this::mapResultSetToFriendModel, nameParam, nameParam, nameParam, nowUserId, nowUserId);
+        query,
+        this::mapResultSetToFriendModel,
+        nameParam,
+        nameParam,
+        nameParam,
+        nowUserId,
+        nowUserId);
   }
 
   private FriendChatModel mapResultSetToFriendChatModel(ResultSet rs, int rowNum)
@@ -90,9 +96,10 @@ public class UserRepoJdbc implements UserRepo {
                     .login(rs.getString("login"))
                     .email(rs.getString("email"))
                     .birthDate(rs.getString("birthdate"))
-                        .isFriend(rs.getBoolean("is_friend"))
+                    .isFriend(rs.getBoolean("is_friend"))
                     .build(),
-            nowUserId, id);
+            nowUserId,
+            id);
     return Optional.ofNullable(userProfileModel);
   }
 
@@ -141,7 +148,13 @@ public class UserRepoJdbc implements UserRepo {
             + "            OR email LIKE ?"
             + "            OR full_name LIKE ?) AND user_id != ?;";
     return jdbc.query(
-        query, this::mapResultSetToUserModel, nowUserId, nameParam, nameParam, nameParam, nowUserId);
+        query,
+        this::mapResultSetToUserModel,
+        nowUserId,
+        nameParam,
+        nameParam,
+        nameParam,
+        nowUserId);
   }
 
   @Override

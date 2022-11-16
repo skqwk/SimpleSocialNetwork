@@ -17,21 +17,21 @@ import ru.sqwk.ssn.service.MessageService;
 @AllArgsConstructor
 @RequestMapping("api/v1")
 public class MessageController {
-    private final MessageService messageService;
+  private final MessageService messageService;
 
-    @DeleteMapping("/messages/{messageId}")
-    public void deleteMessage(@PathVariable Long messageId) {
-        messageService.deleteMessage(messageId);
-    }
+  @DeleteMapping("/messages/{messageId}")
+  public void deleteMessage(@PathVariable Long messageId) {
+    messageService.deleteMessage(messageId);
+  }
 
-    @PutMapping("/messages/{messageId}")
-    public void updateMessage(@PathVariable Long messageId, @RequestBody UpdatedMessageDTO messageDTO) {
-        messageService.updateMessage(messageId, messageDTO);
-    }
+  @PutMapping("/messages/{messageId}")
+  public void updateMessage(
+      @PathVariable Long messageId, @RequestBody UpdatedMessageDTO messageDTO) {
+    messageService.updateMessage(messageId, messageDTO);
+  }
 
-    @PatchMapping("/messages/{messageId}")
-    public void setMessageRead(@PathVariable Long messageId) {
-        messageService.markMessageAsRead(messageId);
-    }
-
+  @PatchMapping("/messages/{messageId}")
+  public void setMessageRead(@PathVariable Long messageId) {
+    messageService.markMessageAsRead(messageId);
+  }
 }

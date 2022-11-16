@@ -2,7 +2,12 @@ package ru.sqwk.ssn.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import ru.sqwk.ssn.dto.UpdatedUserDTO;
 import ru.sqwk.ssn.model.FriendModel;
 import ru.sqwk.ssn.model.UserModel;
@@ -16,38 +21,38 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    @GetMapping("/users")
-    public List<UserModel> findAll(@RequestParam(name = "name", required = false, defaultValue = "") String name) {
-        if (name.isEmpty()) {
-            return userService.getUsers();
+  @GetMapping("/users")
+  public List<UserModel> findAll(
+      @RequestParam(name = "name", required = false, defaultValue = "") String name) {
+    if (name.isEmpty()) {
+      return userService.getUsers();
 
-        } else {
-            return userService.getUsersByName(name);
-        }
+    } else {
+      return userService.getUsersByName(name);
     }
+  }
 
-    @PutMapping("/user")
-    public void update(@AuthenticationPrincipal UserAccount userAccount, @RequestBody UpdatedUserDTO updatedUserDTO) {
-        userService.updateUser(userAccount.getId(), updatedUserDTO);
+  @PutMapping("/user")
+  public void update(
+      @AuthenticationPrincipal UserAccount userAccount,
+      @RequestBody UpdatedUserDTO updatedUserDTO) {
+    userService.updateUser(userAccount.getId(), updatedUserDTO);
+  }
+
+  @GetMapping("/friends")
+  public List<FriendModel> findAllFriends(
+      @RequestParam(name = "name", required = false, defaultValue = "") String name,
+      @RequestParam(name = "category", required = false, defaultValue = "All") String category) {
+    if (name.isEmpty()) {
+      if (category.equals("All")) {
+        return userService.getFriends();
+      } else {
+        return userService.getFriendsByCategory(category);
+      }
+    } else {
+      return userService.getFriendsByCategoryAndName(category, name);
     }
-
-    @GetMapping("/friends")
-    public List<FriendModel> findAllFriends(
-            @RequestParam(name = "name", required = false, defaultValue = "") String name,
-            @RequestParam(name = "category", required = false, defaultValue = "All") String category
-            ) {
-        if (name.isEmpty()) {
-            if (category.equals("All")) {
-                return userService.getFriends();
-            } else {
-                return userService.getFriendsByCategory(category);
-            }
-        } else {
-            return userService.getFriendsByCategoryAndName(category, name);
-        }
-    }
-
-
+  }
 }

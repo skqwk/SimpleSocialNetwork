@@ -13,8 +13,6 @@ public class AuthController {
 
   @GetMapping("/auth")
   public UserLogin getNowUser(@AuthenticationPrincipal UserAccount userAccount) {
-    return UserLogin.builder()
-            .login(userAccount.getLogin())
-            .build();
+    return UserLogin.builder().login(userAccount.getLogin()).build();
   }
 }

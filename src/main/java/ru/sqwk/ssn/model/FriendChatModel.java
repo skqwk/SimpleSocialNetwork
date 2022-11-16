@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class FriendChatModel {
-    private String friendLogin;
-    private Long friendId;
+  private String friendLogin;
+  private Long friendId;
 }

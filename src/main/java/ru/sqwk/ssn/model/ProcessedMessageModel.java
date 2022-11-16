@@ -8,12 +8,11 @@ import lombok.Setter;
 @Setter
 @Builder
 public class ProcessedMessageModel {
-    private Long id;
-    private String senderLogin;
-    private String recipientLogin;
-    private Long senderId;
-    private Long recipientId;
-    private String content;
-    private String sentAt;
-
+  private Long id;
+  private String senderLogin;
+  private String recipientLogin;
+  private Long senderId;
+  private Long recipientId;
+  private String content;
+  private String sentAt;
 }

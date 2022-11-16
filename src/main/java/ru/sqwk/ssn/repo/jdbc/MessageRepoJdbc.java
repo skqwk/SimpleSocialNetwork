@@ -64,61 +64,62 @@ public class MessageRepoJdbc implements MessageRepo {
   @Override
   public Optional<Message> getMessage(Long messageId) {
     String query = "SELECT * FROM message WHERE message_id = ?;";
-      Message message = jdbc.queryForObject(query, this::mapResultSetToMessage, messageId);
-      return Optional.ofNullable(message);
+    Message message = jdbc.queryForObject(query, this::mapResultSetToMessage, messageId);
+    return Optional.ofNullable(message);
   }
 
-  private Message mapResultSetToMessage(ResultSet rs, int rowNum) throws SQLException{
+  private Message mapResultSetToMessage(ResultSet rs, int rowNum) throws SQLException {
     return Message.builder()
-            .id(rs.getLong("message_id"))
-            .content(rs.getString("content"))
-            .hasBeenRead(rs.getBoolean("has_been_read"))
-            .senderId(rs.getLong("sender"))
-            .recipientId(rs.getLong("recipient"))
-            .timestamp(rs.getString("timestamp"))
-            .build();
+        .id(rs.getLong("message_id"))
+        .content(rs.getString("content"))
+        .hasBeenRead(rs.getBoolean("has_been_read"))
+        .senderId(rs.getLong("sender"))
+        .recipientId(rs.getLong("recipient"))
+        .timestamp(rs.getString("timestamp"))
+        .build();
   }
 
   @Override
   public Long save(Message message) {
-    String query = "INSERT INTO message(recipient, sender, has_been_read, content, timestamp) " +
-            "VALUES (?, ?, ?, ?, ?);";
+    String query =
+        "INSERT INTO message(recipient, sender, has_been_read, content, timestamp) "
+            + "VALUES (?, ?, ?, ?, ?);";
     KeyHolder keyHolder = new GeneratedKeyHolder();
 
     jdbc.update(
-            connection -> {
-              PreparedStatement ps =
-                      connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-              ps.setLong(1, message.getRecipientId());
-              ps.setLong(2, message.getSenderId());
-              ps.setBoolean(3, message.getHasBeenRead());
-              ps.setString(4, message.getContent());
-              ps.setString(5, message.getTimestamp());
-              return ps;
-            },
-            keyHolder);
+        connection -> {
+          PreparedStatement ps =
+              connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+          ps.setLong(1, message.getRecipientId());
+          ps.setLong(2, message.getSenderId());
+          ps.setBoolean(3, message.getHasBeenRead());
+          ps.setString(4, message.getContent());
+          ps.setString(5, message.getTimestamp());
+          return ps;
+        },
+        keyHolder);
     return keyHolder.getKey().longValue();
   }
 
-    @Override
-    public void delete(Long messageId) {
-        String query = "DELETE FROM message WHERE message_id = ?;";
-        jdbc.update(query, messageId);
-    }
+  @Override
+  public void delete(Long messageId) {
+    String query = "DELETE FROM message WHERE message_id = ?;";
+    jdbc.update(query, messageId);
+  }
 
-    @Override
-    public void update(Long messageId, String messageContent) {
-        String query = "UPDATE message SET content = ? WHERE message_id = ?";
-        jdbc.update(query, messageContent, messageId);
-    }
+  @Override
+  public void update(Long messageId, String messageContent) {
+    String query = "UPDATE message SET content = ? WHERE message_id = ?";
+    jdbc.update(query, messageContent, messageId);
+  }
 
-    @Override
-    public void markMessageAsRead(Long messageId) {
-        String query = "UPDATE message SET has_been_read = 1 WHERE message_id = ?;";
-        jdbc.update(query, messageId);
-    }
+  @Override
+  public void markMessageAsRead(Long messageId) {
+    String query = "UPDATE message SET has_been_read = 1 WHERE message_id = ?;";
+    jdbc.update(query, messageId);
+  }
 
-    private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
+  private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
     return MessageModel.builder()
         .id(rs.getLong("message_id"))
         .content(rs.getString("content"))

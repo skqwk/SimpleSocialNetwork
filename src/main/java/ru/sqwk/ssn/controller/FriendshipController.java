@@ -37,6 +37,7 @@ public class FriendshipController {
       @AuthenticationPrincipal UserAccount userAccount,
       @PathVariable("friendId") Long friendId,
       @RequestBody SelectedFriendshipCategoryDTO categoryDTO) {
-      friendshipService.updateFriendshipCategory(userAccount.getId(), friendId, categoryDTO.getSelectedCategory());
+    friendshipService.updateFriendshipCategory(
+        userAccount.getId(), friendId, categoryDTO.getSelectedCategory());
   }
 }

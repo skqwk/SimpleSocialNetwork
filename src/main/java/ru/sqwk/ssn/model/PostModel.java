@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 @Builder
 public class PostModel {
-    private Long id;
-    private AuthorModel author;
-    private String content;
-    private String createdAt;
-    private int amountLikes;
-    private Boolean isLiked;
-    private Boolean isEditable;
+  private Long id;
+  private AuthorModel author;
+  private String content;
+  private String createdAt;
+  private int amountLikes;
+  private Boolean isLiked;
+  private Boolean isEditable;
 }

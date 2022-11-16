@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommunityRepo {
-    List<CommunityModel> getCommunities();
-    Optional<CommunityProfileModel> getCommunity(Long id);
+  List<CommunityModel> getCommunities();
 
-    void delete(Long communityId);
+  Optional<CommunityProfileModel> getCommunity(Long id);
 
-    Long save(Community community);
+  void delete(Long communityId);
 
-    List<CommunityModel> getCommunitiesByName(String name);
+  Long save(Community community);
 
-    void update(Community updatedCommunity);
+  List<CommunityModel> getCommunitiesByName(String name);
+
+  void update(Community updatedCommunity);
 }

@@ -15,20 +15,18 @@ import ru.sqwk.ssn.service.MembershipService;
 @AllArgsConstructor
 public class MembershipController {
 
-    private final MembershipService membershipService;
+  private final MembershipService membershipService;
 
-    @DeleteMapping("/membership/{communityId}")
-    public UserLogin leaveCommunity(@AuthenticationPrincipal UserAccount userAccount, @PathVariable Long communityId) {
-        membershipService.deleteMembership(userAccount.getId(), communityId);
-        return UserLogin.builder()
-                .login(userAccount.getLogin())
-                .build();
-    }
+  @DeleteMapping("/membership/{communityId}")
+  public UserLogin leaveCommunity(
+      @AuthenticationPrincipal UserAccount userAccount, @PathVariable Long communityId) {
+    membershipService.deleteMembership(userAccount.getId(), communityId);
+    return UserLogin.builder().login(userAccount.getLogin()).build();
+  }
 
-
-    @PostMapping("/membership/{communityId}")
-    public CommunityMemberModel joinCommunity(@AuthenticationPrincipal UserAccount userAccount, @PathVariable Long communityId) {
-        return membershipService.addMembership(userAccount.getId(), communityId);
-    }
-
+  @PostMapping("/membership/{communityId}")
+  public CommunityMemberModel joinCommunity(
+      @AuthenticationPrincipal UserAccount userAccount, @PathVariable Long communityId) {
+    return membershipService.addMembership(userAccount.getId(), communityId);
+  }
 }

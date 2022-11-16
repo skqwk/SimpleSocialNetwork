@@ -36,12 +36,12 @@ public class MembershipServiceImpl implements MembershipService {
 
   public CommunityMemberModel getMembership(Long userId, Long communityId) {
     return membershipRepo
-            .getMembership(userId, communityId)
-            .orElseThrow(
-                    () ->
-                            new RuntimeException(
-                                    String.format(
-                                            "Membership with userId = %s, communityId = %s - not found",
-                                            userId, communityId)));
+        .getMembership(userId, communityId)
+        .orElseThrow(
+            () ->
+                new RuntimeException(
+                    String.format(
+                        "Membership with userId = %s, communityId = %s - not found",
+                        userId, communityId)));
   }
 }

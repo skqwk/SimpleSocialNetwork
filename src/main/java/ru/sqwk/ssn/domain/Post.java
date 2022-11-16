@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Post {
-    private Long id;
-    private String createdAt;
-    private String content;
-    private Long authorId;
+  private Long id;
+  private String createdAt;
+  private String content;
+  private Long authorId;
 }

@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class AuthorModel {
-    private String login;
-    private Long id;
+  private String login;
+  private Long id;
 }

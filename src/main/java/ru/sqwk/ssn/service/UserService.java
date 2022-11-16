@@ -10,19 +10,21 @@ import ru.sqwk.ssn.security.UserAccount;
 import java.util.List;
 
 public interface UserService {
-    List<UserModel> getUsers();
-    List<FriendModel> getFriends();
+  List<UserModel> getUsers();
 
-    UserProfileModel getUser(Long id);
+  List<FriendModel> getFriends();
 
-    List<UserModel> getUsersByName(String name);
+  UserProfileModel getUser(Long id);
 
-    void updateUser(Long id, UpdatedUserDTO updatedUserDTO);
-    UserAccount getUserByName(String name);
+  List<UserModel> getUsersByName(String name);
 
-    List<FriendChatModel> getFriendChats();
+  void updateUser(Long id, UpdatedUserDTO updatedUserDTO);
 
-    List<FriendModel> getFriendsByCategory(String category);
+  UserAccount getUserByName(String name);
 
-    List<FriendModel> getFriendsByCategoryAndName(String category, String name);
+  List<FriendChatModel> getFriendChats();
+
+  List<FriendModel> getFriendsByCategory(String category);
+
+  List<FriendModel> getFriendsByCategoryAndName(String category, String name);
 }

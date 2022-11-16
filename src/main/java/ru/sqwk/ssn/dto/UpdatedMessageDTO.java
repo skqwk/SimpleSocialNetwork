@@ -6,6 +6,5 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class UpdatedMessageDTO {
-    private String messageContent;
+  private String messageContent;
 }
-

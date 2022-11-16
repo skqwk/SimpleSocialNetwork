@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdatedCommunityDTO {
-    private String name;
-    private String topic;
-    private Integer ageLimit;
+  private String name;
+  private String topic;
+  private Integer ageLimit;
 }

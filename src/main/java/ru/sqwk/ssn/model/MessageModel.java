@@ -8,11 +8,11 @@ import lombok.Setter;
 @Setter
 @Builder
 public class MessageModel {
-    Long id;
-    String sentAt;
-    AuthorModel author;
-    String content;
-    Boolean hasBeenRead;
-    Boolean own;
-    Long friendId;
+  Long id;
+  String sentAt;
+  AuthorModel author;
+  String content;
+  Boolean hasBeenRead;
+  Boolean own;
+  Long friendId;
 }

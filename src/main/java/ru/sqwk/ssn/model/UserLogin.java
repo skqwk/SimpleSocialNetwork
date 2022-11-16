@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 @Builder
 public class UserLogin {
-    private String login;
+  private String login;
 }

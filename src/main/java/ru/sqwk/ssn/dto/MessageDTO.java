@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageDTO {
-    private String from;
-    private String to;
-    private String content;
+  private String from;
+  private String to;
+  private String content;
 }

@@ -44,16 +44,16 @@ public class AuthViewController {
       Model model) {
     if (result.hasErrors()) {
       log.error("Input has errors!");
-      System.out.println(result.getModel().toString());
+      System.out.println(result.getModel());
       return "redirect:registration";
     }
     try {
       authService.registrate(userCredentials);
     } catch (Exception ex) {
-        model.addAttribute("hasError", true);
-        model.addAttribute("reason", ex.getMessage());
-        model.addAttribute("credentials", userCredentials);
-        return "registration";
+      model.addAttribute("hasError", true);
+      model.addAttribute("reason", ex.getMessage());
+      model.addAttribute("credentials", userCredentials);
+      return "registration";
     }
     return "/login";
   }

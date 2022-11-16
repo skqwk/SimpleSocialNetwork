@@ -8,8 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Friendship {
-    private Long user1;
-    private Long user2;
-    private String category;
-    private String timestamp;
+  private Long user1;
+  private Long user2;
+  private String category;
+  private String timestamp;
 }

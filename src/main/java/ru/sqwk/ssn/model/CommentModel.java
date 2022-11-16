@@ -8,9 +8,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CommentModel {
-    private Long id;
-    private String createdAt;
-    private AuthorModel author;
-    private String content;
-    private Boolean isEditable;
+  private Long id;
+  private String createdAt;
+  private AuthorModel author;
+  private String content;
+  private Boolean isEditable;
 }

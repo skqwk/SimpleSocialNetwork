@@ -15,10 +15,9 @@ import javax.validation.constraints.Email;
 @AllArgsConstructor
 public class UserCredentials {
 
-    private String login;
-    private String password;
-    private String fullName;
-    private String birthDate;
-    @Email
-    private String email;
+  private String login;
+  private String password;
+  private String fullName;
+  private String birthDate;
+  @Email private String email;
 }

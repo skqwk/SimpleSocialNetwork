@@ -8,9 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class UserModel {
-    private String fullName;
-    private String login;
-    private Long id;
-    private Boolean isFriend;
-
+  private String fullName;
+  private String login;
+  private Long id;
+  private Boolean isFriend;
 }

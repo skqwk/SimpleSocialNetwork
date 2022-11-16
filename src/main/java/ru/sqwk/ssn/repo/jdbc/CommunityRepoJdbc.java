@@ -44,7 +44,8 @@ public class CommunityRepoJdbc implements CommunityRepo {
   public Optional<CommunityProfileModel> getCommunity(Long id) {
     Long nowUserId = SecurityContextWrapper.getNowUser().getId();
     String query =
-        "SELECT community_id, name, age_limit, topic, creation_date, is_suit_for_age_limit(?, age_limit) as is_suit FROM community WHERE community_id = ?;";
+        "SELECT community_id, name, age_limit, topic, creation_date, "
+            + "is_suit_for_age_limit(?, age_limit) as is_suit FROM community WHERE community_id = ?;";
 
     CommunityProfileModel communityProfileModel =
         jdbc.queryForObject(query, this::mapRowSetToCommunityProfileModel, nowUserId, id);

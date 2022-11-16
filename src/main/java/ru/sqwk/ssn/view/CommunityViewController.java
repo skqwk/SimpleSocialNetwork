@@ -41,10 +41,10 @@ public class CommunityViewController {
   @PostMapping("/community")
   public String createCommunity(@ModelAttribute("community") NewCommunityDTO newCommunityDTO) {
     log.info(
-            "Create new community, name = {}, topic = {}, ageLimit = {}",
-            newCommunityDTO.getName(),
-            newCommunityDTO.getTopic(),
-            newCommunityDTO.getAgeLimit());
+        "Create new community, name = {}, topic = {}, ageLimit = {}",
+        newCommunityDTO.getName(),
+        newCommunityDTO.getTopic(),
+        newCommunityDTO.getAgeLimit());
 
     Long id = communityController.createCommunity(newCommunityDTO).getId();
     return String.format("redirect:/communities/%s", id);

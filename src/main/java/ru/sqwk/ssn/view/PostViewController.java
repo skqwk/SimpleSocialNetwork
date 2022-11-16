@@ -13,17 +13,18 @@ import ru.sqwk.ssn.service.PostService;
 @AllArgsConstructor
 public class PostViewController {
 
-    private final PostService postService;
+  private final PostService postService;
 
-    @GetMapping("/posts")
-    public String posts(@AuthenticationPrincipal UserAccount userAccount, Model model) {
-        model.addAttribute("posts", postService.getPosts(userAccount.getId()));
-        return "posts";
-    }
+  @GetMapping("/posts")
+  public String posts(@AuthenticationPrincipal UserAccount userAccount, Model model) {
+    model.addAttribute("posts", postService.getPosts(userAccount.getId()));
+    return "posts";
+  }
 
-    @GetMapping("/posts/{postId}")
-    public String post(@AuthenticationPrincipal UserAccount userAccount, Model model, @PathVariable Long postId) {
-        model.addAttribute("post", postService.getExpandedPost(userAccount.getId(), postId));
-        return "post";
-    }
+  @GetMapping("/posts/{postId}")
+  public String post(
+      @AuthenticationPrincipal UserAccount userAccount, Model model, @PathVariable Long postId) {
+    model.addAttribute("post", postService.getExpandedPost(userAccount.getId(), postId));
+    return "post";
+  }
 }

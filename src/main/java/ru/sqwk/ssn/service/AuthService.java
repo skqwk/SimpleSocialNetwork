@@ -5,5 +5,5 @@ import ru.sqwk.ssn.security.UserCredentials;
 
 public interface AuthService extends UserDetailsService {
 
-    void registrate(UserCredentials userCredentials);
+  void registrate(UserCredentials userCredentials);
 }

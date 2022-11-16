@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Message {
-    private Long id;
-    private String timestamp;
-    private String content;
-    private Long senderId;
-    private Long recipientId;
-    private Boolean hasBeenRead;
+  private Long id;
+  private String timestamp;
+  private String content;
+  private Long senderId;
+  private Long recipientId;
+  private Boolean hasBeenRead;
 }

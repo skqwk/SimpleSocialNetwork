@@ -12,5 +12,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SelectedFriendshipCategoryDTO {
-    private String selectedCategory;
+  private String selectedCategory;
 }
