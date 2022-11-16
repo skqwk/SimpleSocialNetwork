@@ -26,7 +26,8 @@ public class MessageRepoJdbc implements MessageRepo {
   @Override
   public List<MessageModel> getChats(Long userId) {
     String query =
-        "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, CASE WHEN sender = ? THEN 1 ELSE 0 END as own FROM ("
+            "SELECT login as friend_login, message_id, recipient, sender, content, has_been_read, time, own, friend FROM ("
+        + "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, CASE WHEN sender = ? THEN 1 ELSE 0 END as own FROM ("
             + "SELECT max(M.timestamp) as time, F.friend FROM "
             + "(SELECT DISTINCT user2 as friend FROM friendship WHERE user1 = ? "
             + "UNION "
@@ -35,7 +36,7 @@ public class MessageRepoJdbc implements MessageRepo {
             + "(SELECT * FROM message WHERE sender = ? OR recipient = ?) M "
             + "ON F.friend = M.sender or M.recipient = F.friend group by F.friend) T, "
             + "    message MS "
-            + "WHERE T.time = MS.timestamp AND (T.friend = MS.sender OR T.friend = MS.recipient);";
+            + "WHERE T.time = MS.timestamp AND (T.friend = MS.sender OR T.friend = MS.recipient)) CH, user where CH.friend = user.user_id;";
 
     return jdbc.query(
         query, this::mapResultSetToMessageModel, userId, userId, userId, userId, userId);
@@ -127,6 +128,7 @@ public class MessageRepoJdbc implements MessageRepo {
         .author(userRepo.getAuthor(rs.getLong("sender")))
         .sentAt(rs.getString("time"))
         .friendId(rs.getLong("friend"))
+        .friendLogin(rs.getString("friend_login"))
         .build();
   }
 }

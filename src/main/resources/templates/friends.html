@@ -81,7 +81,7 @@
                     <i class="fas fa-user fa-2x text-primary"></i>
                     <p >${friend.fullName}</p>
                     <i class="fas fa-minus" role="button" onclick="deleteFriendship(${friend.id})"></i>
-                    <a href="{/users/${friend.id}" >${friend.login}</a>
+                    <a href="/users/${friend.id}" >${friend.login}</a>
                     <br>
                      <select  onchange="updateFriendshipCategory(${friend.id}, this)" class="custom-select col-2">
                      <option value="Classmates" ${"Classmates" === friend.category ? "selected" : ""}>Classmates</option>

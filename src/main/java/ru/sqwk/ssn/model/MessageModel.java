@@ -15,4 +15,5 @@ public class MessageModel {
     Boolean hasBeenRead;
     Boolean own;
     Long friendId;
+    String friendLogin;
 }

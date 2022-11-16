@@ -32,7 +32,7 @@
         </div>
     </div>
     <div id="communities">
-        <div th:each="community: ${communities}" class="col">
+        <div th:each="community: ${communities}">
             <i class="fas fa-users fa-2x text-info"></i>
             <br>
             <a th:href="@{/communities/{id}(id=${community.getId()})}" th:text="${community.getName()}"></a>

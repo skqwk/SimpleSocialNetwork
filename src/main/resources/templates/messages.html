@@ -29,13 +29,17 @@
     </div>
     <div id="messages">
         <div th:each="message: ${messages}" th:id="${message.getId()}" class="message">
-            <a th:if="${message.getOwn()}" th:href="@{/profile}" th:text="Me"></a>
-            <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}"
-               th:text="${message.getAuthor().getLogin()}"></a>
-            <p th:text="${message.getContent()}"></p>
-            <p th:if="${!message.getHasBeenRead()}"><span class="badge badge-pill badge-info">Не прочитано</span></p>
+            <a th:href="@{/users/{id}(id=${message.getFriendId()})}"
+               th:text="${message.getFriendLogin()}"></a>
+                <p th:if="${!message.getHasBeenRead()}"><span class="badge badge-pill badge-info">Не прочитано</span></p>
+            <div>
+            <a th:if="${message.getOwn()}" th:href="@{/profile}" >Me: </a>
+                <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}"
+                   th:text="${message.getAuthor().getLogin()}"></a>
+                <p th:text="${message.getContent()}" style="display:inline"></p>
+            </div>
             <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>
-            <p class="font-weight-light text-muted"><small th:text="${message.getSentAt()}" ></small></p>
+            <p class="font-weight-light text-muted"><small th:text="${message.getSentAt()}"></small></p>
             <hr>
         </div>
     </div>

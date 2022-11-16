@@ -15,8 +15,7 @@
             <div class="form-outline mb-4">
                 <label class="form-label" for="post-content">Расскажите, как у вас дела</label>
                 <textarea maxlength="200" id="post-content" name="post-content"
-                          placeholder="Расскажите, как у вас дела" class="form-control">
-            </textarea>
+                          placeholder="Расскажите, как у вас дела" class="form-control"/></textarea>
             </div>
             <input type="submit" value="Создать пост" class="btn btn-primary"/>
         </form>
@@ -66,7 +65,7 @@
                             <p>${post.content}</p>
                             <p class="font-italic text-muted"><small>${post.createdAt}</small></p>
                             <p name="amountLikes">Понравилось: ${post.amountLikes}</p>
-                            <i class="far fa-heart" role="button" onclick="${post.id}, this"></i>
+                            <i class="far fa-heart" role="button" onclick="updateLike(${post.id}, this)"></i>
                             <hr>
                         `
         document.getElementById("posts").prepend(postDiv)
