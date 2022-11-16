@@ -15,7 +15,8 @@
         </div>
 
 
-        <form th:if="${!isUser}" th:object="${community}" th:onsubmit="|return updateCommunity(${community.getId()});|"
+        <form th:if="${!isUser}" th:object="${community}"
+              th:onsubmit="|updateCommunity(${community.getId()}); return false;|"
               class="col justify-content-center"
         >
             <!-- Name input -->
@@ -100,8 +101,9 @@
         const url = `/api/v1/community/${communityId}`
         await fetch(url, {
             method: "DELETE"
-        }).catch(ex => console.log(ex));
-        document.location.href = '/communities'
+        }).catch(ex => console.log(ex))
+            .then(data => document.location.href = '/communities');
+
     }
 
     function updateAmountMembers(acc) {
@@ -160,6 +162,7 @@
 
         console.log(updatedCommunity);
         updateQuery(communityId, updatedCommunity);
+        location.href = `/communities/${communityId}`;
     }
 
     function updateQuery(communityId, updatedCommunity) {
@@ -172,7 +175,8 @@
             body: JSON.stringify(updatedCommunity),
             headers: headers
         })
-            .catch(ex => console.log(ex));
+            .catch(ex => console.log(ex))
+            .then(data => location.href = `/communities/${communityId}`);
 
 
     }

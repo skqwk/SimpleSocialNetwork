@@ -12,7 +12,7 @@
     </div>
 
     <h2 class="text-center">Профиль</h2>
-    <form th:object="${user}" onsubmit="return update();" action="/profile" method="get">
+    <form th:object="${user}" onsubmit="return update();">
 
         <!-- Username input -->
         <div class="form-outline mb-4">
@@ -111,6 +111,7 @@
             console.log(updatedProfile);
             updateQuery(updatedProfile);
             console.log(updatedProfile);
+            location.href = '/profile';
         }
 
         function updateQuery(updatedProfile) {
@@ -124,7 +125,6 @@
                 headers: headers
             })
                 .catch(ex => console.log(ex));
-
 
         }
 
