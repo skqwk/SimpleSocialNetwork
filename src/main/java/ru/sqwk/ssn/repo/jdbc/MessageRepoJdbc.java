@@ -27,8 +27,8 @@ public class MessageRepoJdbc implements MessageRepo {
   @Override
   public List<MessageChatModel> getChats(Long userId) {
     String query =
-            "SELECT login as friend_login, message_id, recipient, sender, content, has_been_read, time, own, friend FROM ("
-        + "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, CASE WHEN sender = ? THEN 1 ELSE 0 END as own FROM ("
+        "SELECT login as friend_login, message_id, recipient, sender, content, has_been_read, time, own, friend FROM ("
+            + "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, CASE WHEN sender = ? THEN 1 ELSE 0 END as own FROM ("
             + "SELECT max(M.timestamp) as time, F.friend FROM "
             + "(SELECT DISTINCT user2 as friend FROM friendship WHERE user1 = ? "
             + "UNION "
@@ -104,7 +104,6 @@ public class MessageRepoJdbc implements MessageRepo {
     return keyHolder.getKey().longValue();
   }
 
-<<<<<<< HEAD
   @Override
   public void delete(Long messageId) {
     String query = "DELETE FROM message WHERE message_id = ?;";
@@ -123,27 +122,8 @@ public class MessageRepoJdbc implements MessageRepo {
     jdbc.update(query, messageId);
   }
 
-  private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
-=======
-    @Override
-    public void delete(Long messageId) {
-        String query = "DELETE FROM message WHERE message_id = ?;";
-        jdbc.update(query, messageId);
-    }
-
-    @Override
-    public void update(Long messageId, String messageContent) {
-        String query = "UPDATE message SET content = ? WHERE message_id = ?";
-        jdbc.update(query, messageContent, messageId);
-    }
-
-    @Override
-    public void markMessageAsRead(Long messageId) {
-        String query = "UPDATE message SET has_been_read = 1 WHERE message_id = ?;";
-        jdbc.update(query, messageId);
-    }
-
-    private MessageChatModel mapResultSetToMessageChatModel(ResultSet rs, int rowNum) throws SQLException {
+  private MessageChatModel mapResultSetToMessageChatModel(ResultSet rs, int rowNum)
+      throws SQLException {
     return MessageChatModel.builder()
         .id(rs.getLong("message_id"))
         .content(rs.getString("content"))
@@ -155,8 +135,8 @@ public class MessageRepoJdbc implements MessageRepo {
         .friendLogin(rs.getString("friend_login"))
         .build();
   }
-    private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
->>>>>>> 283451c58d4d4de5e1f49b034df582e4152981f7
+
+  private MessageModel mapResultSetToMessageModel(ResultSet rs, int rowNum) throws SQLException {
     return MessageModel.builder()
         .id(rs.getLong("message_id"))
         .content(rs.getString("content"))
