@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.sqwk.ssn.model.FriendChatModel;
+import ru.sqwk.ssn.model.MessageChatModel;
 import ru.sqwk.ssn.model.MessageModel;
 import ru.sqwk.ssn.security.UserAccount;
 import ru.sqwk.ssn.service.FriendshipService;
@@ -27,7 +28,7 @@ public class MessagesViewController {
 
   @GetMapping("/messages")
   public String chats(@AuthenticationPrincipal UserAccount userAccount, Model model) {
-    List<MessageModel> chats = messageService.getChats(userAccount.getId());
+    List<MessageChatModel> chats = messageService.getChats(userAccount.getId());
     List<FriendChatModel> friendChats = userService.getFriendChats();
     model.addAttribute("messages", chats);
     model.addAttribute("friendChats", friendChats);

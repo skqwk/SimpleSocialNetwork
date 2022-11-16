@@ -31,11 +31,12 @@
         <div th:each="message: ${messages}" th:id="${message.getId()}" class="message">
             <a th:href="@{/users/{id}(id=${message.getFriendId()})}"
                th:text="${message.getFriendLogin()}"></a>
-                <p th:if="${!message.getHasBeenRead()}"><span class="badge badge-pill badge-info">Не прочитано</span></p>
+                <span th:if="${!message.getHasBeenRead()}" class="badge badge-pill badge-info">Не прочитано</span>
+            <br>
             <div>
-            <a th:if="${message.getOwn()}" th:href="@{/profile}" >Me: </a>
+                <a th:if="${message.getOwn()}" th:href="@{/profile}" >Me: </a>
                 <a th:if="${!message.getOwn()}" th:href="@{/users/{id}(id=${message.getAuthor().getId()})}"
-                   th:text="${message.getAuthor().getLogin()}"></a>
+                   th:text="|${message.getAuthor().getLogin()}:|"></a>
                 <p th:text="${message.getContent()}" style="display:inline"></p>
             </div>
             <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>

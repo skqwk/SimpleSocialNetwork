@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.sqwk.ssn.domain.Message;
 import ru.sqwk.ssn.dto.MessageDTO;
 import ru.sqwk.ssn.dto.UpdatedMessageDTO;
+import ru.sqwk.ssn.model.MessageChatModel;
 import ru.sqwk.ssn.model.MessageModel;
 import ru.sqwk.ssn.model.ProcessedMessageModel;
 import ru.sqwk.ssn.repo.MessageRepo;
@@ -26,7 +27,7 @@ public class MessageServiceImpl implements MessageService {
   private final UserService userService;
 
   @Override
-  public List<MessageModel> getChats(Long userId) {
+  public List<MessageChatModel> getChats(Long userId) {
     return messageRepo.getChats(userId);
   }
 
