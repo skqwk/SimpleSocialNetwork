@@ -9,35 +9,35 @@
 <div th:insert="~{base :: site_navbar}"></div>
 <div class="container">
 
-        <a id="author" th:href="@{/users/{id}(id=${post.getAuthor().getId()})}"
-           th:text="${post.getAuthor().getLogin()}" class="mt-4"></a>
-        <div th:id="${post.getId()}">
-            <form th:action="|javascript:updatePost(${post.getId()})|">
+    <a id="author" th:href="@{/users/{id}(id=${post.getAuthor().getId()})}"
+       th:text="${post.getAuthor().getLogin()}" class="mt-4"></a>
+    <div th:id="${post.getId()}">
+        <form th:action="|javascript:updatePost(${post.getId()})|">
                 <textarea class="form-control" th:readonly="${!post.getIsEditable()}" th:text="${post.getContent()}"
                           maxlength="200"
                           id="post-content" name="post-content"/>
-                <input th:if="${post.getIsEditable()}" class="btn btn-primary mt-2" type="submit" value="Изменить пост"/>
-            </form>
-            <br><br>
+            <input th:if="${post.getIsEditable()}" class="btn btn-primary mt-2" type="submit" value="Изменить пост"/>
+        </form>
+        <br><br>
 
-            <form th:if="${#authorization.expression('hasRole(''USER'')')}" action="javascript:addComment()" class="mb-4">
+        <form th:if="${#authorization.expression('hasRole(''USER'')')}" action="javascript:addComment()" class="mb-4">
                 <textarea maxlength="200" class="form-control" id="new-comment-content" name="new-comment-content"
                 ></textarea>
-                <input class="btn btn-primary mt-2" type="submit" value="Добавить комментарий"/>
-            </form>
+            <input class="btn btn-primary mt-2" type="submit" value="Добавить комментарий"/>
+        </form>
 
-            <div id="comments" class="mt-4">
-                <div th:each="comment: ${post.getComments()}" th:id="|c-${comment.getId()}|">
-                    <a th:text="${comment.getAuthor().getLogin()}"
-                       th:href="@{/users/{id}(id=${comment.getAuthor().getId()})}"/>
-                    <i th:if="${#authorization.expression('hasRole(''ADMIN'')') || comment.getIsEditable()}"
-                       class="fas fa-trash" th:onclick="|deleteComment(${comment.getId()})|" role='button'></i>
-                    <p th:text="${comment.getContent()}"/>
-                    <p class="font-italic text-muted"><small th:text="${comment.getCreatedAt()}"></small></p>
-                    <hr>
-                </div>
+        <div id="comments" class="mt-4">
+            <div th:each="comment: ${post.getComments()}" th:id="|c-${comment.getId()}|">
+                <a th:text="${comment.getAuthor().getLogin()}"
+                   th:href="@{/users/{id}(id=${comment.getAuthor().getId()})}"/>
+                <i th:if="${#authorization.expression('hasRole(''ADMIN'')') || comment.getIsEditable()}"
+                   class="fas fa-trash" th:onclick="|deleteComment(${comment.getId()})|" role='button'></i>
+                <p th:text="${comment.getContent()}"/>
+                <p class="font-italic text-muted"><small th:text="${comment.getCreatedAt()}"></small></p>
+                <hr>
             </div>
         </div>
+    </div>
 </div>
 <script>
     function deleteComment(commentId) {
@@ -69,18 +69,20 @@
         var postId = parseInt(window.location.href.split("/")[4])
         var url = `${postId}/comment`
         var commentContent = document.getElementById("new-comment-content").value;
-        var headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        console.log({commentContent})
-        fetch(url, {
-            method: "POST",
-            body: JSON.stringify({commentContent}),
-            headers: headers
-        })
-            .catch(ex => console.log(ex))
-            .then(resp => resp.json())
-            .then(data => appendComment(data));
-        document.getElementById("new-comment-content").value = "";
+        if (commentContent && commentContent.trim()) {
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            console.log({commentContent})
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify({commentContent}),
+                headers: headers
+            })
+                .catch(ex => console.log(ex))
+                .then(resp => resp.json())
+                .then(data => appendComment(data));
+            document.getElementById("new-comment-content").value = "";
+        }
     }
 
     function appendComment(comment) {

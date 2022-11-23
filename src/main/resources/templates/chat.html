@@ -18,7 +18,7 @@
 
         <div id="conversationDiv" class="row mb-4">
             <div class="col-6">
-                <input type="text" id="content" placeholder="Напишите сообщение..." class="form-control"/>
+                <input type="text" maxlength="200" id="content" placeholder="Напишите сообщение..." class="form-control"/>
 
             </div>
             <div class="col-2">
@@ -167,11 +167,13 @@
 
     function sendMessage() {
         let content = document.getElementById('content').value;
-        let to = document.getElementById("recipient").getAttribute("value");
-        let from = document.getElementById("sender").getAttribute("value");
-        let message = {'to': to, 'from': from, 'content': content};
-        stompClient.send("/app/chat", {}, JSON.stringify(message));
-        document.getElementById('content').value = '';
+        if (content && content.trim()) {
+            let to = document.getElementById("recipient").getAttribute("value");
+            let from = document.getElementById("sender").getAttribute("value");
+            let message = {'to': to, 'from': from, 'content': content};
+            stompClient.send("/app/chat", {}, JSON.stringify(message));
+            document.getElementById('content').value = '';
+        }
     }
 
     function deleteMessage(messageId) {

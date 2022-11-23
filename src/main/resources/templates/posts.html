@@ -27,11 +27,11 @@
             <i th:if="${post.getIsEditable() || #authorization.expression('hasRole(''ADMIN'')')}"
                class="fas fa-trash" th:onclick="|deletePost(${post.getId()})|" role='button'></i>
             <p th:text="${post.getContent()}"></p>
-                <p name="amountLikes" th:text="|Понравилось: ${post.getAmountLikes()}|" style="display:inline"></p>
+            <p name="amountLikes" th:text="|Понравилось: ${post.getAmountLikes()}|" style="display:inline"></p>
             <i th:if="${#authorization.expression('hasRole(''USER'')')}"
-                   th:class="'fa-heart align-self-end '+${post.getIsLiked() ? 'fas' : 'far'}"
-                   role="button"
-                   th:onclick="|updateLike(${post.getId()}, this)|"></i>
+               th:class="'fa-heart align-self-end '+${post.getIsLiked() ? 'fas' : 'far'}"
+               role="button"
+               th:onclick="|updateLike(${post.getId()}, this)|"></i>
             <p class="font-italic text-muted"><small th:text="${post.getCreatedAt()}"></small></p>
             <hr>
         </div>
@@ -39,20 +39,22 @@
 </div>
 <script>
     function addPost() {
-        url = "/post"
+        url = "/post";
         var postContent = document.getElementById("post-content").value;
-        var headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        console.log({postContent})
-        fetch(url, {
-            method: "POST",
-            body: JSON.stringify({postContent}),
-            headers: headers
-        })
-            .catch(ex => console.log(ex))
-            .then(resp => resp.json())
-            .then(data => appendPost(data));
-        document.getElementById("post-content").value = "";
+        if (postContent && postContent.trim()) {
+            var headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            console.log({postContent})
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify({postContent}),
+                headers: headers
+            })
+                .catch(ex => console.log(ex))
+                .then(resp => resp.json())
+                .then(data => appendPost(data));
+            document.getElementById("post-content").value = "";
+        }
     }
 
     function appendPost(post) {

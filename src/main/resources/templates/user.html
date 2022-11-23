@@ -53,6 +53,7 @@
             th:onclick="|deleteFriendship(${user.getId()})|">Удалить из друзей
     </button>
     <button class="btn btn-primary" id="add-friend-button" th:hidden="${isNowUser || user.getIsFriend() || #authorization.expression('hasRole(''ADMIN'')')}"
+            th:disabled="${user.getHasRequest()}"
             th:onclick="|addFriendship(${user.getId()})|">Добавить в друзья
     </button>
 
@@ -77,9 +78,7 @@
             let removeFriendButton = document.getElementById("remove-friend-button");
             let addFriendButton = document.getElementById("add-friend-button");
             if (create) {
-                addFriendButton.setAttribute("hidden", "true");
-                removeFriendButton.removeAttribute("hidden");
-                goToChatButton.removeAttribute("disabled");
+                addFriendButton.setAttribute("disabled", "true");
             } else {
                 addFriendButton.removeAttribute("hidden");
                 removeFriendButton.setAttribute("hidden", "true")

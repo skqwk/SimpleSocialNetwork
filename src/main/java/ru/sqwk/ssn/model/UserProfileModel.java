@@ -14,4 +14,5 @@ public class UserProfileModel {
   private String birthDate;
   private String email;
   private Boolean isFriend;
+  private Boolean hasRequest;
 }

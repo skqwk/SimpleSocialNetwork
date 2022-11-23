@@ -12,4 +12,5 @@ public class UserModel {
   private String login;
   private Long id;
   private Boolean isFriend;
+  private Boolean hasRequest;
 }

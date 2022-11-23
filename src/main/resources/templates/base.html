@@ -58,6 +58,9 @@
                 <li class="nav-item" sec:authorize="hasRole('USER')">
                     <a class="nav-link active" th:href="@{/friends}">Друзья</a>
                 </li>
+                <li class="nav-item" sec:authorize="hasRole('USER')">
+                    <a class="nav-link active" th:href="@{/friendship-requests}">Заявки в друзья</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link active" th:href="@{/communities}">Общества</a>
                 </li>

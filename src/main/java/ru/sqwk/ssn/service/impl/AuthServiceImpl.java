@@ -29,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public void registrate(UserCredentials userCredentials) {
+    log.info("User with login = {} want to register", userCredentials.getLogin());
     if (userRepo.findByLogin(userCredentials.getLogin()).isEmpty()) {
 
       User registeredUser =
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
               .birthdate(userCredentials.getBirthDate())
               .fullName(userCredentials.getFullName())
               .build();
+      log.info("Save new user with login = {}", userCredentials.getLogin());
       userRepo.saveRegisteredUser(registeredUser);
     } else {
       log.error("User with login = {} already exists!", userCredentials.getLogin());

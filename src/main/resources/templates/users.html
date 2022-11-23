@@ -26,10 +26,12 @@
     <div id="users">
         <div th:each="user: ${users}">
             <p name="badge" th:if="${user.getIsFriend()}"><span class="badge badge-pill badge-info" name="pill">В друзьях</span>
+            <p name="request-badge" th:if="${user.getHasRequest()}"><span class="badge badge-pill badge-info" name="pill">Заявка отправлена</span>
             </p>
             <i class="fas fa-user fa-2x text-primary"></i>
             <p th:text="${user.getFullName()}"></p>
-            <i sec:authorize="hasRole('USER')" th:class="'fas ' + ${user.getIsFriend() ? 'fa-minus' : 'fa-plus'}"
+
+            <i sec:authorize="hasRole('USER')" th:if="${!user.getHasRequest()}" th:class="'fas ' + ${user.getIsFriend() ? 'fa-minus' : 'fa-plus'}"
                role="button" th:onclick="|updateFriendship(${user.getId()}, this)|"></i>
             <a th:href="@{/users/{id}(id=${user.getId()})}" th:text="${user.getLogin()}"></a>
             <hr>
@@ -112,16 +114,15 @@
             element.classList.add('fa-plus');
         } else {
             element.classList.remove('fa-plus');
-            element.classList.add('fa-minus');
         }
     }
 
     function toggleBadge(parent, checked) {
         if (checked) {
             let badge = document.createElement('p');
-            badge.setAttribute("name", "badge")
+            badge.setAttribute("name", "request-badge")
             badge.innerHTML = `
-                <span class="badge badge-pill badge-info" name="badge">В друзьях</span>
+                <span class="badge badge-pill badge-info" name="pill">Заявка отправлена</span>
             `;
             parent.prepend(badge);
 

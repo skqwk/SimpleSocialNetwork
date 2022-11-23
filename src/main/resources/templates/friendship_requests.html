@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:insert="base :: common_header(~{::title})">
+    <meta charset="UTF-8">
+    <title>Friendship Requests</title>
+
+
+</head>
+<body>
+<div th:insert="~{base :: site_navbar}"></div>
+<div class="container">
+    <div class="mb-4 mt-4">
+
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <input id="query" type="text" class="form-control" placeholder="Введите запрос">
+
+            </div>
+            <div class="col-auto">
+
+                <select id="selectedTopic" class="custom-select">
+                    <option value="All" selected>All</option>
+                    <option th:each="i : ${ {'Music', 'Art', 'News', 'Humour', 'Food', 'IT'} }"
+                            th:value="${i}"
+                            th:text="${i}">
+                    </option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-primary" onclick="find()">Поиск</button>
+            </div>
+        </div>
+    </div>
+    <div id="requests" class="row">
+        <div id="incoming-requests" class="col-6">
+            <p>Входящие заявки</p>
+            <div th:each="request: ${incomingRequests}" th:id="|${request.getSenderId()}-${request.getRecipientId()}|">
+                <a th:href="@{/users/{id}(id=${request.getSenderId()})}" th:text="${request.getLogin()}"></a>
+                <span th:text="${request.getStatus()}" class="badge badge-pill badge-info"></span>
+                <button class="btn btn-danger" id="remove-friend-button"
+                        th:onclick="|deleteFriendshipRequest(${request.getSenderId()}, ${request.getRecipientId()})|">Отклонить
+                </button>
+                <button class="btn btn-primary" id="add-friend-button"
+                        th:onclick="|addFriendship(${request.getSenderId()}, ${request.getRecipientId()})|">Принять
+                </button>
+                <br>
+                <hr>
+            </div>
+        </div>
+        <div id="outcoming-requests" class="col-6">
+            <p>Исходящие заявки</p>
+            <div th:each="request: ${outcomingRequests}" th:id="|${request.getSenderId()}-${request.getRecipientId()}|">
+                <a th:href="@{/users/{id}(id=${request.getRecipientId()})}" th:text="${request.getLogin()}"></a>
+                <span th:text="${request.getStatus()}" class="badge badge-pill badge-info"></span>
+                <button class="btn btn-danger" id="remove-friend-button"
+                        th:onclick="|deleteFriendshipRequest(${request.getSenderId()}, ${request.getRecipientId()})|">Удалить
+                </button>
+                <br>
+                <hr>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function goToChat(friendId) {
+        console.log(friendId);
+        document.location.href = `/chat?friend=${friendId}`;
+    }
+
+    function deleteFriendshipRequest(senderId, recipientId) {
+        const url = `/api/v1/friendship-request/${senderId}/${recipientId}`
+        fetch(url, {
+            method: 'DELETE'
+        }).catch(ex => console.log(ex));
+        removeRequest(senderId, recipientId);
+    }
+
+    function addFriendship(senderId, recipientId) {
+        const url = `/api/v1/friendship/${senderId}`
+        fetch(url, {
+            method: 'POST'
+        }).catch(ex => console.log(ex));
+        removeRequest(senderId, recipientId);
+    }
+    function removeRequest(senderId, recipientId) {
+        document.getElementById(`${senderId}-${recipientId}`).remove();
+    }
+
+</script>
+
+
+</body>
+</html>
