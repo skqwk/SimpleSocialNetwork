@@ -39,7 +39,7 @@
                    th:text="|${message.getAuthor().getLogin()}:|"></a>
                 <p th:text="${message.getContent()}" style="display:inline"></p>
             </div>
-            <a th:href="|/chat?friend=${message.getFriendId()}|">Перейти к переписке</a>
+            <a th:href="|/chat?user=${message.getFriendId()}|">Перейти к переписке</a>
             <p class="font-weight-light text-muted"><small th:text="${message.getSentAt()}"></small></p>
             <hr>
         </div>
@@ -52,7 +52,7 @@
         let selectedChat = document.getElementById('selectedChat').value;
         if (selectedChat > 0) {
             console.log(selectedChat);
-            document.location.href = `/chat?friend=${selectedChat}`;
+            document.location.href = `/chat?user=${selectedChat}`;
         }
     }
 </script>

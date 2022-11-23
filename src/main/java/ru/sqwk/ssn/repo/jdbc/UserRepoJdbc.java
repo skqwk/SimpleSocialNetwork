@@ -58,7 +58,7 @@ public class UserRepoJdbc implements UserRepo {
     Long nowUserId = SecurityContextWrapper.getNowUser().getId();
     SqlParameterSource namedParameters =
         new MapSqlParameterSource().addValue("nowUserId", nowUserId);
-    String query = "call db.get_friends(?)";
+    String query = "call db.get_friends(:nowUserId)";
     return jdbc.query(query, namedParameters, this::mapResultSetToFriendChatModel);
   }
 

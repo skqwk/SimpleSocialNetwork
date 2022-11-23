@@ -9,35 +9,14 @@
 <body>
 <div th:insert="~{base :: site_navbar}"></div>
 <div class="container">
-    <div class="mb-4 mt-4">
 
-        <div class="row align-items-center">
-            <div class="col-sm-6">
-                <input id="query" type="text" class="form-control" placeholder="Введите запрос">
-
-            </div>
-            <div class="col-auto">
-
-                <select id="selectedTopic" class="custom-select">
-                    <option value="All" selected>All</option>
-                    <option th:each="i : ${ {'Music', 'Art', 'News', 'Humour', 'Food', 'IT'} }"
-                            th:value="${i}"
-                            th:text="${i}">
-                    </option>
-                </select>
-            </div>
-            <div class="col-auto">
-                <button class="btn btn-primary" onclick="find()">Поиск</button>
-            </div>
-        </div>
-    </div>
-    <div id="requests" class="row">
+    <div id="requests" class="mb-4 mt-4 row">
         <div id="incoming-requests" class="col-6">
             <p>Входящие заявки</p>
             <div th:each="request: ${incomingRequests}" th:id="|${request.getSenderId()}-${request.getRecipientId()}|">
                 <a th:href="@{/users/{id}(id=${request.getSenderId()})}" th:text="${request.getLogin()}"></a>
                 <span th:text="${request.getStatus()}" class="badge badge-pill badge-info"></span>
-                <button class="btn btn-danger" id="remove-friend-button"
+                <button class="btn btn-danger" id="remove-friendship-inrequest-button"
                         th:onclick="|deleteFriendshipRequest(${request.getSenderId()}, ${request.getRecipientId()})|">Отклонить
                 </button>
                 <button class="btn btn-primary" id="add-friend-button"
@@ -52,7 +31,7 @@
             <div th:each="request: ${outcomingRequests}" th:id="|${request.getSenderId()}-${request.getRecipientId()}|">
                 <a th:href="@{/users/{id}(id=${request.getRecipientId()})}" th:text="${request.getLogin()}"></a>
                 <span th:text="${request.getStatus()}" class="badge badge-pill badge-info"></span>
-                <button class="btn btn-danger" id="remove-friend-button"
+                <button class="btn btn-danger" id="remove-friendship-outrequest-button"
                         th:onclick="|deleteFriendshipRequest(${request.getSenderId()}, ${request.getRecipientId()})|">Удалить
                 </button>
                 <br>

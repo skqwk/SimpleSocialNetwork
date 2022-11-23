@@ -2,6 +2,9 @@ package ru.sqwk.ssn.repo.jdbc;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -22,25 +25,30 @@ import java.util.Optional;
 public class MessageRepoJdbc implements MessageRepo {
 
   private final JdbcTemplate jdbc;
+  private final NamedParameterJdbcTemplate namedJdbc;
   private final UserRepo userRepo;
 
   @Override
   public List<MessageChatModel> getChats(Long userId) {
+    SqlParameterSource namedParameters =
+            new MapSqlParameterSource().addValue("userId", userId);
     String query =
         "SELECT login as friend_login, message_id, recipient, sender, content, has_been_read, time, own, friend FROM ("
-            + "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, CASE WHEN sender = ? THEN 1 ELSE 0 END as own FROM ("
+            + "SELECT T.friend, MS.message_id, MS.recipient, MS.sender, MS.content, MS.has_been_read, T.time, " +
+                "CASE WHEN sender = :userId THEN 1 ELSE 0 END as own FROM ("
             + "SELECT max(M.timestamp) as time, F.friend FROM "
-            + "(SELECT DISTINCT user2 as friend FROM friendship WHERE user1 = ? "
+            + "(SELECT DISTINCT user2 as friend FROM friendship WHERE user1 = :userId "
             + "UNION "
-            + "SELECT DISTINCT user1 as friend FROM friendship where user2 = ?) F "
+            + "SELECT DISTINCT user1 as friend FROM friendship where user2 = :userId) F "
             + "INNER JOIN "
-            + "(SELECT * FROM message WHERE sender = ? OR recipient = ?) M "
+            + "(SELECT * FROM message WHERE sender = :userId OR recipient = :userId) M "
             + "ON F.friend = M.sender or M.recipient = F.friend group by F.friend) T, "
             + "    message MS "
-            + "WHERE T.time = MS.timestamp AND (T.friend = MS.sender OR T.friend = MS.recipient)) CH, user where CH.friend = user.user_id;";
+            + "WHERE T.time = MS.timestamp AND (T.friend = MS.sender OR T.friend = MS.recipient)) CH, user " +
+                "WHERE CH.friend = user.user_id;";
 
-    return jdbc.query(
-        query, this::mapResultSetToMessageChatModel, userId, userId, userId, userId, userId);
+    return namedJdbc.query(
+        query, namedParameters, this::mapResultSetToMessageChatModel);
   }
 
   @Override

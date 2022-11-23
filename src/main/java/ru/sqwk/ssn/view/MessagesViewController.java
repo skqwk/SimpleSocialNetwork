@@ -39,13 +39,13 @@ public class MessagesViewController {
   @GetMapping("/chat")
   public String chat(
       @AuthenticationPrincipal UserAccount userAccount,
-      @RequestParam("friend") Long friendId,
+      @RequestParam("user") Long userId,
       Model model) {
-    List<MessageModel> messages = messageService.getChat(userAccount.getId(), friendId);
+    List<MessageModel> messages = messageService.getChat(userAccount.getId(), userId);
     model.addAttribute("messages", messages);
     model.addAttribute("sender", userAccount.getLogin());
-    model.addAttribute("recipient", userService.getUser(friendId).getLogin());
-    model.addAttribute("recipientId", friendId);
+    model.addAttribute("recipient", userService.getUser(userId).getLogin());
+    model.addAttribute("recipientId", userId);
     return "chat";
   }
 }
